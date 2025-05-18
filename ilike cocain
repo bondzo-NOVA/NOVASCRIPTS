@@ -1,0 +1,122 @@
+local player = game:GetService("Players").LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "FlashGui"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Full‑screen color frame
+local flashFrame = Instance.new("Frame")
+flashFrame.Size = UDim2.new(1, 0, 1, 0)
+flashFrame.Position = UDim2.new(0, 0, 0, 0)
+flashFrame.BackgroundColor3 = Color3.new(0, 0, 0)  -- start black
+flashFrame.Parent = gui
+
+-- Big purple text
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(1, 0, 1, 0)
+textLabel.Position = UDim2.new(0, 0, 0, 0)
+textLabel.BackgroundTransparency = 1
+textLabel.Text = "I LIKE COCAIN"           -- keep user‑requested spelling
+textLabel.TextScaled = true                -- auto‑fit text
+textLabel.Font = Enum.Font.GothamBlack
+textLabel.TextColor3 = Color3.fromRGB(128, 0, 128) -- purple
+textLabel.Parent = gui
+
+-- Flashing loop
+local colors = { Color3.new(0, 0, 0), Color3.new(1, 0, 0) } -- black, red
+local index = 1
+
+while true do
+    flashFrame.BackgroundColor3 = colors[index]
+    index = (index % #colors) + 1  -- cycle 1 → 2 → 1 ...
+    task.wait(0.12)                -- flash speed (seconds); tweak as desired
+end
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AvatarViewer"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+-- ViewportFrame setup
+local viewport = Instance.new("ViewportFrame")
+viewport.Size = UDim2.new(0.4, 0, 0.6, 0)
+viewport.Position = UDim2.new(0.3, 0, 0.2, 0)
+viewport.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+viewport.BorderSizePixel = 0
+viewport.AnchorPoint = Vector2.new(0.5, 0.5)
+viewport.Parent = screenGui
+
+-- Clone character into Viewport
+local function createClone()
+    local clone = character:Clone()
+    for _, obj in pairs(clone:GetDescendants()) do
+        if obj:IsA("BasePart") or obj:IsA("Decal") then
+            obj.Anchored = true
+        end
+    end
+    clone.Parent = viewport
+    return clone
+end
+
+-- Camera setup
+local camera = Instance.new("Camera")
+camera.FieldOfView = 70
+viewport.CurrentCamera = camera
+
+-- Position camera and character
+local avatar = createClone()
+local root = avatar:FindFirstChild("HumanoidRootPart")
+camera.CFrame = CFrame.new(Vector3.new(0, 2, 8), Vector3.new(0, 2, 0)) -- initial camera position
+
+-- Rotation logic
+local angle = 0
+local dragging = false
+local lastMouseX = 0
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        lastMouseX = UserInputService:GetMouseLocation().X
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local currentX = input.Position.X
+        local deltaX = currentX - lastMouseX
+        angle = angle - deltaX * 0.3
+        lastMouseX = currentX
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.A then
+        angle = angle - 10
+    elseif input.KeyCode == Enum.KeyCode.D then
+        angle = angle + 10
+    end
+end)
+
+-- Update loop
+RunService.RenderStepped:Connect(function()
+    if root then
+        local radius = 8
+        local height = 2
+        local x = math.sin(math.rad(angle)) * radius
+        local z = math.cos(math.rad(angle)) * radius
+        camera.CFrame = CFrame.new(Vector3.new(x, height, z), root.Position)
+    end
+end)
