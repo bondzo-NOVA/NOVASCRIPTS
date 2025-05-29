@@ -513,3 +513,8 @@ local IsStudio = game:GetService("RunService"):IsStudio()
                 end)
             end
         end
+
+        if LocalPlayer.Character then
+            CharacterAdded(LocalPlayer.Character)
+        end
+        LocalPlayer.CharacterAdded:Connect(CharacterAdded)
