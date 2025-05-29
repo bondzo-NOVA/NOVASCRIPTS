@@ -1,0 +1,191 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local Window = Rayfield:CreateWindow({
+   Name = "♠️ Spades Hub ♠️",
+   LoadingTitle = "SPADES.HUB",
+   LoadingSubtitle = "SPADES",
+   ConfigurationSaving = {
+      Enabled = true,
+      FileName = "SPADES.HUB"
+   },
+   Discord = {
+      Enabled = true,
+      Invite = "https://discord.gg/q8mUBS76",
+      RememberJoins = true
+   },
+   KeySystem = true,
+   KeySettings = {
+      Title = "SPADES",
+      Subtitle = "SPADES.HUB",
+      Note = "Join our discord server https://discord.gg/q8mUBS76",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"tester123"}
+   }
+})
+
+-- Tabs
+local HomeTab = Window:CreateTab("🏡 Home 🏡", nil)
+local CheatsTab = Window:CreateTab("🔥 Cheats 🔥", nil)
+local VCTab = Window:CreateTab("🎙️ VC 🎙️", nil)
+local CreditsTab = Window:CreateTab("🎉 Credits 🎉", nil)
+local SettingsTab = Window:CreateTab("⚙️ Settings ⚙️", nil)
+
+-- Home Tab
+HomeTab:CreateParagraph({
+    Title = "❤️ Join our discord love from our staff SPADES.HUB ❤️",
+    Content = "❤️ If you guys have any suggestions tell me ❤️"
+})
+
+-- Baseplate functionality
+local baseplates = {}
+local baseplateEnabled = false
+
+for X = -10000, 10000, 512 do
+    for Z = -10000, 10000, 512 do
+        local P = Instance.new("Part")
+        P.Anchored = true
+        P.Locked = true
+        P.Size = Vector3.new(512, 1, 512)
+        P.CFrame = CFrame.new(X, -0.5, Z)
+        P.Color = Color3.fromRGB(60, 60, 60)
+        P.Material = Enum.Material.Neon
+        P.Transparency = 1
+        P.CanCollide = false
+        P.Parent = workspace
+        table.insert(baseplates, P)
+    end
+end
+
+local function setBaseplateState(enabled)
+    for _, part in pairs(baseplates) do
+        part.Transparency = enabled and 0 or 1
+        part.CanCollide = enabled
+    end
+end
+
+CheatsTab:CreateToggle({
+    Name = "Baseplate Toggle",
+    CurrentValue = false,
+    Callback = function(Value)
+        baseplateEnabled = Value
+        setBaseplateState(baseplateEnabled)
+    end
+})
+
+-- Emotes Button
+CheatsTab:CreateButton({
+    Name = "All Emotes",
+    Callback = function()
+        local success, result = pcall(function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/bondzo-NOVA/NOVASCRIPTS/refs/heads/main/emotesigmarizzgayytdonttouchbutlilbro'))()
+        end)
+        if success then
+            Rayfield:Notify({
+                Title = "❤️ Emotes Loaded ❤️",
+                Content = "Press , to open emotes",
+                Duration = 6.5
+            })
+        else
+            Rayfield:Notify({
+                Title = "❌ Error Loading Emotes ❌",
+                Content = "Failed to load emotes: " .. tostring(result),
+                Duration = 6.5
+            })
+        end
+    end
+})
+
+-- Sysfly Button
+CheatsTab:CreateButton({
+    Name = "Sysfly",
+    Callback = function()
+        local success, result = pcall(function()
+            loadstring(game:HttpGet('https://pastebin.com/raw/2HjHxBff'))()
+        end)
+        if success then
+            Rayfield:Notify({
+                Title = "✅ Sysfly Loaded ✅",
+                Content = "Sysfly script executed successfully",
+                Duration = 6.5
+            })
+        else
+            Rayfield:Notify({
+                Title = "❌ Error Loading Sysfly ❌",
+                Content = "Failed to load sysfly: " .. tostring(result),
+                Duration = 6.5
+            })
+        end
+    end
+})
+
+-- VC Tab
+VCTab:CreateButton({
+    Name = "VC Unban",
+    Callback = function()
+        local success, result = pcall(function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/bondzo-NOVA/NOVASCRIPTS/703f8fa10a7c11e40d7118057167e104bff60ef7/vcunban'))()
+        end)
+        if success then
+            Rayfield:Notify({
+                Title = "✅ VC Unban Loaded ✅",
+                Content = "VC Unban script executed successfully",
+                Duration = 6.5
+            })
+        else
+            Rayfield:Notify({
+                Title = "❌ Error Loading VC Unban ❌",
+                Content = "Failed to load VC Unban: " .. tostring(result),
+                Duration = 6.5
+            })
+        end
+    end
+})
+
+VCTab:CreateButton({
+    Name = "VC Leave",
+    Callback = function()
+        local success, result = pcall(function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/bondzo-NOVA/NOVASCRIPTS/refs/heads/main/vcban'))()
+        end)
+        if success then
+            Rayfield:Notify({
+                Title = "✅ VC Leave Loaded ✅",
+                Content = "VC Leave script executed successfully",
+                Duration = 6.5
+            })
+        else
+            Rayfield:Notify({
+                Title = "❌ Error Loading VC Leave ❌",
+                Content = "Failed to load VC Leave: " .. tostring(result),
+                Duration = 6.5
+            })
+        end
+    end
+})
+
+-- Credits Tab
+CreditsTab:CreateParagraph({
+    Title = "Made by ACE and VAMP",
+    Content = "*Special thanks to all our testers*"
+})
+
+-- Settings Tab
+SettingsTab:CreateParagraph({
+    Title = "*IN THE WORKS DIPSHIT*",
+    Content = "*IN THE WORKS DIPSHIT*"
+})
+
+-- Initial Notification
+Rayfield:Notify({
+    Title = "❤️ Made with love from ACE ❤️",
+    Content = "❤️ Join our server https://discord.gg/q8mUBS76",
+    Duration = 6.5
+})
