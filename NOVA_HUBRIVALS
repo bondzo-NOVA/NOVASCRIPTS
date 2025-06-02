@@ -1,333 +1,315 @@
+--// Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local StarterGui = game:GetService("StarterGui")
+local HttpService = game:GetService("HttpService")
 
-function base64decode(data)
-    local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-    data = string.gsub(data, '[^'..b..'=]', '')
-    return (data:gsub('.', function(x)
-        if (x == '=') then return '' end
-        local r,f='',(b:find(x)-1)
-        for i=6,1,-1 do r=r..(f%2^i - f%2^(i-1) > 0 and '1' or '0') end
-        return r;
-    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-        if (#x ~= 8) then return '' end
-        local c=0
-        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
-        return string.char(c)
-    end))
+--// Error Handling
+local function logError(err)
+    warn("Rivals ESP Script Error: " .. tostring(err))
 end
 
+--// Player References
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui", 5)
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid", 5)
+local camera = Workspace.CurrentCamera
 
-
-local hriMBZWkfZ = game:GetService(base64decode("aHJpTUJaV2tmWg=="))
-local IoeaaWlqUog = game:GetService(base64decode("SW9lYWFXbHFVb2c="))
-local vXYACT = game:GetService(base64decode("dlhZQUNU"))
-local FIOlBuPjUd = game:GetService(base64decode("RklPbEJ1UGpVZA=="))
-local zcnpZSC = game:GetService(base64decode("emNucFpTQw=="))
-local rgWAGxakM = game:GetService(base64decode("cmdXQUd4YWtN"))
-
-
-local DzurruoTdD logError(err)
-    warn(base64decode("Uml2YWxzIEVTUCBTY3JpcHQgRXJyb3I6IA==") .. tostring(err))
-end
-
-
-local kNqmJPeTg = hriMBZWkfZ.LocalPlayer
-local fYYBHJhiNAj = kNqmJPeTg:WaitForChild(base64decode("ZllZQkhKaGlOQWo="), 5)
-local uqERhL = kNqmJPeTg.uqERhL or kNqmJPeTg.CharacterAdded:Wait()
-local afPZXhtFnXI = uqERhL:WaitForChild(base64decode("YWZQWlhodEZuWEk="), 5)
-local qGQxBvQJLgL = FIOlBuPjUd.CurrentCamera
-
-if not fYYBHJhiNAj or not afPZXhtFnXI then
-    logError(base64decode("RmFpbGVkIHRvIGluaXRpYWxpemUgZllZQkhKaGlOQWogb3IgYWZQWlhodEZuWEk="))
+if not PlayerGui or not Humanoid then
+    logError("Failed to initialize PlayerGui or Humanoid")
     return
 end
 
+--// FPS Counter
+local FPSLabel = Instance.new("TextLabel")
+FPSLabel.Parent = PlayerGui
+FPSLabel.Size = UDim2.new(0, 100, 0, 30)
+FPSLabel.Position = UDim2.new(1, -110, 0, 10)
+FPSLabel.BackgroundTransparency = 0.8
+FPSLabel.BackgroundColor3 = Color3.fromRGB(40, 20, 60)
+FPSLabel.TextColor3 = Color3.fromRGB(128, 0, 255)
+FPSLabel.Font = Enum.Font.Gotham
+FPSLabel.TextSize = 16
+FPSLabel.Text = "FPS: 0"
+FPSLabel.TextXAlignment = Enum.TextXAlignment.Right
+FPSLabel.ZIndex = 10
+local stroke = Instance.new("UIStroke", FPSLabel)
+stroke.Color = Color3.fromRGB(128, 0, 255)
+stroke.Thickness = 1
+stroke.Transparency = 0.2
 
-local cwhtZIR = Instance.new(base64decode("VGV4dExhYmVs"))
-cwhtZIR.Parent = fYYBHJhiNAj
-cwhtZIR.Size = UDim2.new(0, 100, 0, 30)
-cwhtZIR.Position = UDim2.new(1, -110, 0, 10)
-cwhtZIR.BackgroundTransparency = 0.8
-cwhtZIR.BackgroundColor3 = Color3.fromRGB(40, 20, 60)
-cwhtZIR.TextColor3 = Color3.fromRGB(128, 0, 255)
-cwhtZIR.Font = Enum.Font.Gotham
-cwhtZIR.TextSize = 16
-cwhtZIR.Text = base64decode("RlBTOiAw")
-cwhtZIR.TextXAlignment = Enum.TextXAlignment.Right
-cwhtZIR.ZIndex = 10
-local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), cwhtZIR)
-sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
-sbfSqYbuo.Thickness = 1
-sbfSqYbuo.Transparency = 0.2
-
-local UlfETw = 0
-local SdwrbgUuz = tick()
-local BZZFFfaDpAX = vXYACT.RenderStepped:Connect(DzurruoTdD()
-    UlfETw = UlfETw + 1
-    local CtvuIm = tick()
-    if CtvuIm - SdwrbgUuz >= 1 then
-        cwhtZIR.Text = base64decode("RlBTOiA=") .. tostring(math.floor(UlfETw / (CtvuIm - SdwrbgUuz)))
-        UlfETw = 0
-        SdwrbgUuz = CtvuIm
+local frameCount = 0
+local lastTime = tick()
+local fpsConnection = RunService.RenderStepped:Connect(function()
+    frameCount = frameCount + 1
+    local currentTime = tick()
+    if currentTime - lastTime >= 1 then
+        FPSLabel.Text = "FPS: " .. tostring(math.floor(frameCount / (currentTime - lastTime)))
+        frameCount = 0
+        lastTime = currentTime
     end
 end)
 
+--// ESP GUI
+local EspGui = Instance.new("ScreenGui")
+EspGui.Name = "RivalsEspUI"
+EspGui.Parent = PlayerGui
+EspGui.Enabled = true
+EspGui.ResetOnSpawn = false
+EspGui.IgnoreGuiInset = true
 
-local kxDKPgEv = Instance.new(base64decode("U2NyZWVuR3Vp"))
-kxDKPgEv.Name = base64decode("Uml2YWxzRXNwVUk=")
-kxDKPgEv.Parent = fYYBHJhiNAj
-kxDKPgEv.Enabled = true
-kxDKPgEv.ResetOnSpawn = false
-kxDKPgEv.IgnoreGuiInset = true
+--// ESP Frame (Draggable)
+local EspFrame = Instance.new("Frame", EspGui)
+EspFrame.Size = UDim2.new(0, 220, 0, 350)
+EspFrame.Position = UDim2.new(0, 10, 0, 10)
+EspFrame.BackgroundColor3 = Color3.fromRGB(40, 20, 60)
+EspFrame.BackgroundTransparency = 0.2
+Instance.new("UICorner", EspFrame).CornerRadius = UDim.new(0, 12)
+local stroke = Instance.new("UIStroke", EspFrame)
+stroke.Color = Color3.fromRGB(128, 0, 255)
+stroke.Thickness = 3
+stroke.Transparency = 0.1
+stroke.LineJoinMode = Enum.LineJoinMode.Round
 
+--// Scrolling Frame
+local ScrollingFrame = Instance.new("ScrollingFrame", EspFrame)
+ScrollingFrame.Size = UDim2.new(1, -20, 1, -20)
+ScrollingFrame.Position = UDim2.new(0, 10, 0, 10)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.ScrollBarThickness = 5
+ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(128, 0, 255)
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 700)
+ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
 
-local qVlyQbz = Instance.new(base64decode("RnJhbWU="), kxDKPgEv)
-qVlyQbz.Size = UDim2.new(0, 220, 0, 350)
-qVlyQbz.Position = UDim2.new(0, 10, 0, 10)
-qVlyQbz.BackgroundColor3 = Color3.fromRGB(40, 20, 60)
-qVlyQbz.BackgroundTransparency = 0.2
-Instance.new(base64decode("VUlDb3JuZXI="), qVlyQbz).CornerRadius = UDim.new(0, 12)
-local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), qVlyQbz)
-sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
-sbfSqYbuo.Thickness = 3
-sbfSqYbuo.Transparency = 0.1
-sbfSqYbuo.LineJoinMode = Enum.LineJoinMode.Round
-
-
-local oyogeaDV = Instance.new(base64decode("b3lvZ2VhRFY="), qVlyQbz)
-oyogeaDV.Size = UDim2.new(1, -20, 1, -20)
-oyogeaDV.Position = UDim2.new(0, 10, 0, 10)
-oyogeaDV.BackgroundTransparency = 1
-oyogeaDV.ScrollBarThickness = 5
-oyogeaDV.ScrollBarImageColor3 = Color3.fromRGB(128, 0, 255)
-oyogeaDV.CanvasSize = UDim2.new(0, 0, 0, 700)
-oyogeaDV.ScrollingDirection = Enum.ScrollingDirection.Y
-
-
-local LBcVHyIUp, dragInput, dragStart, startPos = false, nil, nil, nil
-qVlyQbz.InputBegan:Connect(DzurruoTdD(input)
+--// Draggable Logic
+local dragging, dragInput, dragStart, startPos = false, nil, nil, nil
+EspFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        LBcVHyIUp, dragStart, startPos = true, input.Position, qVlyQbz.Position
+        dragging, dragStart, startPos = true, input.Position, EspFrame.Position
     end
 end)
-qVlyQbz.InputChanged:Connect(DzurruoTdD(input)
+EspFrame.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement then
         dragInput = input
     end
 end)
-qVlyQbz.InputEnded:Connect(DzurruoTdD(input)
+EspFrame.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        LBcVHyIUp = false
+        dragging = false
     end
 end)
-vXYACT.RenderStepped:Connect(DzurruoTdD()
-    if LBcVHyIUp and dragInput then
-        local YokybJKn = dragInput.Position - dragStart
-        qVlyQbz.Position = UDim2.new(
-            startPos.X.Scale, startPos.X.Offset + YokybJKn.X,
-            startPos.Y.Scale, startPos.Y.Offset + YokybJKn.Y
+RunService.RenderStepped:Connect(function()
+    if dragging and dragInput then
+        local delta = dragInput.Position - dragStart
+        EspFrame.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
         )
     end
 end)
 
+--// Click Sound
+local ClickSound = Instance.new("Sound", EspGui)
+ClickSound.SoundId = "rbxassetid://10512372288"
+ClickSound.Volume = 0.5
 
-local pzrAUafj = Instance.new(base64decode("U291bmQ="), kxDKPgEv)
-pzrAUafj.SoundId = base64decode("cmJ4YXNzZXRpZDovLzEwNTEyMzcyMjg4")
-pzrAUafj.Volume = 0.5
+--// Variables
+local boxEspEnabled = false
+local espHandles = {}
+local skeletonEspEnabled = false
+local Skeletons = {}
+local aimbotEnabled = false
+local rageBotEnabled = false
+local softAimEnabled = false
+local aimbotConnections = {}
+local aimRadius = 150
+local softAimRadius = 300
+local noClipEnabled = false
+local flyEnabled = false
+local thirdPersonEnabled = false
+local dashEnabled = false
+local dashCooldown = 1
+local dashSpeed = 50
+local dashDuration = 0.2
+local lastDashTime = 0
+local flyConnection
+local mouseLocked = true
+local flySpeed = 50
 
+--// FOV Circles
+local fovCircle = Drawing.new("Circle")
+fovCircle.Color = Color3.fromRGB(128, 0, 255)
+fovCircle.Thickness = 2
+fovCircle.Filled = false
+fovCircle.Transparency = 0.7
+fovCircle.Radius = aimRadius
+fovCircle.Visible = false
 
-local tgwZPjvctvJ = false
-local CEACBgea = {}
-local wtNjFgu = false
-local iVBoLA = {}
-local cZzacYq = false
-local DWMUQYs = false
-local bjJXMIPjcbb = false
-local AiiRdrz = {}
-local HdXpffjnS = 150
-local EdPbzfb = 300
-local wujpYbWfO = false
-local OVRyyPmY = false
-local uSHyCqQ = false
-local YvzIcPBU = false
-local srfVsZ = 1
-local OyXufEZ = 50
-local BTHKPVHZhE = 0.2
-local KpNLfqDtxVS = 0
-local bSqKdsv
-local uvLgjiQf = true
-local LsXrtpb = 50
+local softAimCircle = Drawing.new("Circle")
+softAimCircle.Color = Color3.fromRGB(128, 0, 255)
+softAimCircle.Thickness = 1
+softAimCircle.Filled = false
+softAimCircle.Transparency = 0.8
+softAimCircle.Radius = softAimRadius
+softAimCircle.Visible = false
 
+--// Toggle Function (Modified for Bright/Dark Purple Bubble)
+local function makeToggle(parent, y, text, callback)
+    local btnFrame = Instance.new("Frame", parent)
+    btnFrame.Size = UDim2.new(0, 180, 0, 40)
+    btnFrame.Position = UDim2.new(0, 0, 0, y)
+    btnFrame.BackgroundTransparency = 1
 
-local MReBkC = Drawing.new(base64decode("Q2lyY2xl"))
-MReBkC.Color = Color3.fromRGB(128, 0, 255)
-MReBkC.Thickness = 2
-MReBkC.Filled = false
-MReBkC.Transparency = 0.7
-MReBkC.Radius = HdXpffjnS
-MReBkC.Visible = false
+    local btn = Instance.new("TextButton", btnFrame)
+    btn.Size = UDim2.new(0, 140, 0, 40)
+    btn.Position = UDim2.new(0, 0, 0, 0)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
+    btn.BackgroundTransparency = 0.3
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Text = text
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 20)
+    local stroke = Instance.new("UIStroke", btn)
+    stroke.Color = Color3.fromRGB(128, 0, 255)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.1
+    stroke.LineJoinMode = Enum.LineJoinMode.Round
 
-local IDGRykDGLmE = Drawing.new(base64decode("Q2lyY2xl"))
-IDGRykDGLmE.Color = Color3.fromRGB(128, 0, 255)
-IDGRykDGLmE.Thickness = 1
-IDGRykDGLmE.Filled = false
-IDGRykDGLmE.Transparency = 0.8
-IDGRykDGLmE.Radius = EdPbzfb
-IDGRykDGLmE.Visible = false
+    local toggleIndicator = Instance.new("Frame", btnFrame)
+    toggleIndicator.Size = UDim2.new(0, 30, 0, 30)
+    toggleIndicator.Position = UDim2.new(1, -30, 0, 5)
+    toggleIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80) -- Dark purple (off)
+    Instance.new("UICorner", toggleIndicator).CornerRadius = UDim.new(0, 15)
+    local toggleStroke = Instance.new("UIStroke", toggleIndicator)
+    toggleStroke.Color = Color3.fromRGB(128, 0, 255)
+    toggleStroke.Thickness = 2
+    toggleStroke.Transparency = 0.1
 
+    local isOn = false -- Track toggle state
 
-local DzurruoTdD makeToggle(parent, y, text, callback)
-    local EGCXzyj = Instance.new(base64decode("RnJhbWU="), parent)
-    EGCXzyj.Size = UDim2.new(0, 180, 0, 40)
-    EGCXzyj.Position = UDim2.new(0, 0, 0, y)
-    EGCXzyj.BackgroundTransparency = 1
-
-    local DVYHCpJrAq = Instance.new(base64decode("VGV4dEJ1dHRvbg=="), EGCXzyj)
-    DVYHCpJrAq.Size = UDim2.new(0, 140, 0, 40)
-    DVYHCpJrAq.Position = UDim2.new(0, 0, 0, 0)
-    DVYHCpJrAq.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
-    DVYHCpJrAq.BackgroundTransparency = 0.3
-    DVYHCpJrAq.Font = Enum.Font.GothamBold
-    DVYHCpJrAq.TextSize = 14
-    DVYHCpJrAq.TextColor3 = Color3.new(1, 1, 1)
-    DVYHCpJrAq.Text = text
-    Instance.new(base64decode("VUlDb3JuZXI="), DVYHCpJrAq).CornerRadius = UDim.new(0, 20)
-    local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), DVYHCpJrAq)
-    sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
-    sbfSqYbuo.Thickness = 2
-    sbfSqYbuo.Transparency = 0.1
-    sbfSqYbuo.LineJoinMode = Enum.LineJoinMode.Round
-
-    local jTSxGBYGZh = Instance.new(base64decode("RnJhbWU="), EGCXzyj)
-    jTSxGBYGZh.Size = UDim2.new(0, 30, 0, 30)
-    jTSxGBYGZh.Position = UDim2.new(1, -30, 0, 5)
-    jTSxGBYGZh.BackgroundColor3 = Color3.fromRGB(60, 0, 80) 
-    Instance.new(base64decode("VUlDb3JuZXI="), jTSxGBYGZh).CornerRadius = UDim.new(0, 15)
-    local lfPbwukUFc = Instance.new(base64decode("VUlTdHJva2U="), jTSxGBYGZh)
-    lfPbwukUFc.Color = Color3.fromRGB(128, 0, 255)
-    lfPbwukUFc.Thickness = 2
-    lfPbwukUFc.Transparency = 0.1
-
-    local QpNEYp = false 
-
-    DVYHCpJrAq.MouseButton1Click:Connect(DzurruoTdD()
-        pcall(DzurruoTdD()
-            pzrAUafj:Play()
-            QpNEYp = not QpNEYp
-            jTSxGBYGZh.BackgroundColor3 = QpNEYp and Color3.fromRGB(200, 0, 255) or Color3.fromRGB(60, 0, 80) 
-            callback(QpNEYp)
+    btn.MouseButton1Click:Connect(function()
+        pcall(function()
+            ClickSound:Play()
+            isOn = not isOn
+            toggleIndicator.BackgroundColor3 = isOn and Color3.fromRGB(200, 0, 255) or Color3.fromRGB(60, 0, 80) -- Bright purple (on) or dark purple (off)
+            callback(isOn)
         end)
     end)
-    DVYHCpJrAq.MouseEnter:Connect(DzurruoTdD()
-        DVYHCpJrAq.BackgroundColor3 = Color3.fromRGB(80, 40, 120)
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(80, 40, 120)
     end)
-    DVYHCpJrAq.MouseLeave:Connect(DzurruoTdD()
-        DVYHCpJrAq.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
     end)
-    return DVYHCpJrAq, jTSxGBYGZh
+    return btn, toggleIndicator
 end
 
+--// Slider Function (Unchanged)
+local function makeSlider(parent, y, name, min, max, default, callback)
+    local sliderFrame = Instance.new("Frame", parent)
+    sliderFrame.Size = UDim2.new(0, 180, 0, 60)
+    sliderFrame.Position = UDim2.new(0, 0, 0, y)
+    sliderFrame.BackgroundTransparency = 1
+    sliderFrame.Visible = true
 
-local DzurruoTdD makeSlider(parent, y, name, WmxWeMjq, max, default, callback)
-    local Amfuwvu = Instance.new(base64decode("RnJhbWU="), parent)
-    Amfuwvu.Size = UDim2.new(0, 180, 0, 60)
-    Amfuwvu.Position = UDim2.new(0, 0, 0, y)
-    Amfuwvu.BackgroundTransparency = 1
-    Amfuwvu.Visible = true
+    local label = Instance.new("TextLabel", sliderFrame)
+    label.Size = UDim2.new(1, 0, 0, 20)
+    label.BackgroundTransparency = 1
+    label.Text = name .. ": " .. tostring(default)
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 14
 
-    local jVvASjFRJT = Instance.new(base64decode("VGV4dExhYmVs"), Amfuwvu)
-    jVvASjFRJT.Size = UDim2.new(1, 0, 0, 20)
-    jVvASjFRJT.BackgroundTransparency = 1
-    jVvASjFRJT.Text = name .. base64decode("OiA=") .. tostring(default)
-    jVvASjFRJT.TextColor3 = Color3.new(1, 1, 1)
-    jVvASjFRJT.Font = Enum.Font.GothamBold
-    jVvASjFRJT.TextSize = 14
+    local sliderBar = Instance.new("Frame", sliderFrame)
+    sliderBar.Size = UDim2.new(1, 0, 0, 12)
+    sliderBar.Position = UDim2.new(0, 0, 0, 30)
+    sliderBar.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
+    Instance.new("UICorner", sliderBar).CornerRadius = UDim.new(0, 6)
+    local stroke = Instance.new("UIStroke", sliderBar)
+    stroke.Color = Color3.fromRGB(128, 0, 255)
+    stroke.Thickness = 2
 
-    local BSpgGLNhdCK = Instance.new(base64decode("RnJhbWU="), Amfuwvu)
-    BSpgGLNhdCK.Size = UDim2.new(1, 0, 0, 12)
-    BSpgGLNhdCK.Position = UDim2.new(0, 0, 0, 30)
-    BSpgGLNhdCK.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
-    Instance.new(base64decode("VUlDb3JuZXI="), BSpgGLNhdCK).CornerRadius = UDim.new(0, 6)
-    local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), BSpgGLNhdCK)
-    sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
-    sbfSqYbuo.Thickness = 2
+    local sliderButton = Instance.new("TextButton", sliderBar)
+    sliderButton.Size = UDim2.new(0, 20, 0, 20)
+    sliderButton.BackgroundColor3 = Color3.fromRGB(128, 0, 255)
+    sliderButton.Text = ""
+    Instance.new("UICorner", sliderButton).CornerRadius = UDim.new(0, 10)
 
-    local DJxyUG = Instance.new(base64decode("VGV4dEJ1dHRvbg=="), BSpgGLNhdCK)
-    DJxyUG.Size = UDim2.new(0, 20, 0, 20)
-    DJxyUG.BackgroundColor3 = Color3.fromRGB(128, 0, 255)
-    DJxyUG.Text = base64decode("")
-    Instance.new(base64decode("VUlDb3JuZXI="), DJxyUG).CornerRadius = UDim.new(0, 10)
-
-    local LBcVHyIUp = false
-    DJxyUG.InputBegan:Connect(DzurruoTdD(input)
+    local dragging = false
+    sliderButton.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            LBcVHyIUp = true
+            dragging = true
         end
     end)
-    DJxyUG.InputEnded:Connect(DzurruoTdD(input)
+    sliderButton.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            LBcVHyIUp = false
+            dragging = false
         end
     end)
-    IoeaaWlqUog.InputChanged:Connect(DzurruoTdD(input)
-        if LBcVHyIUp and input.UserInputType == Enum.UserInputType.MouseMovement then
-            pcall(DzurruoTdD()
-                local JuGKkpyekR = math.clamp((input.Position.X - BSpgGLNhdCK.AbsolutePosition.X) / BSpgGLNhdCK.AbsoluteSize.X, 0, 1)
-                local xdLgOql = math.floor(WmxWeMjq + (max - WmxWeMjq) * JuGKkpyekR)
-                DJxyUG.Position = UDim2.new(JuGKkpyekR, -10, 0, -4)
-                jVvASjFRJT.Text = name .. base64decode("OiA=") .. tostring(xdLgOql)
-                callback(xdLgOql)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            pcall(function()
+                local relativeX = math.clamp((input.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X, 0, 1)
+                local value = math.floor(min + (max - min) * relativeX)
+                sliderButton.Position = UDim2.new(relativeX, -10, 0, -4)
+                label.Text = name .. ": " .. tostring(value)
+                callback(value)
             end)
         end
     end)
 
-    local yJInrj = (default - WmxWeMjq) / (max - WmxWeMjq)
-    DJxyUG.Position = UDim2.new(yJInrj, -10, 0, -4)
+    local initialRelative = (default - min) / (max - min)
+    sliderButton.Position = UDim2.new(initialRelative, -10, 0, -4)
 
-    return Amfuwvu
+    return sliderFrame
 end
 
-
-local DzurruoTdD updateThirdPerson()
-    pcall(DzurruoTdD()
-        if uSHyCqQ then
-            kNqmJPeTg.CameraMode = Enum.CameraMode.Classic
-            if qGQxBvQJLgL and qGQxBvQJLgL.CameraType ~= Enum.CameraType.Custom then
-                qGQxBvQJLgL.CameraType = Enum.CameraType.Custom
+--// Third-Person Logic
+local function updateThirdPerson()
+    pcall(function()
+        if thirdPersonEnabled then
+            Player.CameraMode = Enum.CameraMode.Classic
+            if camera and camera.CameraType ~= Enum.CameraType.Custom then
+                camera.CameraType = Enum.CameraType.Custom
             end
-            local TSRuKKlT = kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA=="))
-            if TSRuKKlT then
-                qGQxBvQJLgL.CFrame = CFrame.new(TSRuKKlT.Position - qGQxBvQJLgL.CFrame.LookVector * 5, TSRuKKlT.Position)
+            local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                camera.CFrame = CFrame.new(hrp.Position - camera.CFrame.LookVector * 5, hrp.Position)
             end
         end
     end)
 end
 
-
-local DzurruoTdD performDash()
-    pcall(DzurruoTdD()
-        if YvzIcPBU and kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA==")) and tick() - KpNLfqDtxVS >= srfVsZ then
-            local TSRuKKlT = kNqmJPeTg.uqERhL.HumanoidRootPart
-            local xUieRhG = Vector3.new(0, 0, 0)
-            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.W) then
-                xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.LookVector
+--// Dash Movement Logic
+local function performDash()
+    pcall(function()
+        if dashEnabled and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and tick() - lastDashTime >= dashCooldown then
+            local hrp = Player.Character.HumanoidRootPart
+            local moveDirection = Vector3.new(0, 0, 0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + camera.CFrame.LookVector
             end
-            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.S) then
-                xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.LookVector
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - camera.CFrame.LookVector
             end
-            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.A) then
-                xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.RightVector
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - camera.CFrame.RightVector
             end
-            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.D) then
-                xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.RightVector
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + camera.CFrame.RightVector
             end
-            if xUieRhG.Magnitude > 0 then
-                local pSfGqxVhn = xUieRhG.unit * OyXufEZ
-                TSRuKKlT.Velocity = pSfGqxVhn
-                KpNLfqDtxVS = tick()
-                task.spawn(DzurruoTdD()
-                    task.wait(BTHKPVHZhE)
-                    if kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA==")) then
-                        TSRuKKlT.Velocity = Vector3.new(0, TSRuKKlT.Velocity.Y, 0)
+            if moveDirection.Magnitude > 0 then
+                local dashVelocity = moveDirection.unit * dashSpeed
+                hrp.Velocity = dashVelocity
+                lastDashTime = tick()
+                task.spawn(function()
+                    task.wait(dashDuration)
+                    if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                        hrp.Velocity = Vector3.new(0, hrp.Velocity.Y, 0)
                     end
                 end)
             end
@@ -335,130 +317,130 @@ local DzurruoTdD performDash()
     end)
 end
 
-
-local DzurruoTdD updateBoxESP()
-    pcall(DzurruoTdD()
-        for cgYydSD, player in ipairs(hriMBZWkfZ:GetPlayers()) do
-            if player ~= kNqmJPeTg and player.uqERhL and player.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
-                local hhagpBLvGn = player.uqERhL.Head
-                local hAlkBITigo = player.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk="))
-                if hAlkBITigo and hAlkBITigo.Health > 0 then
-                    local cgYydSD, onScreen = qGQxBvQJLgL:WorldToViewportPoint(hhagpBLvGn.Position)
-                    if onScreen and tgwZPjvctvJ then
-                        local WmxWeMjq, max = hhagpBLvGn.Position - Vector3.new(1, 1, 1), hhagpBLvGn.Position + Vector3.new(1, 1, 1)
-                        local GswBtLirT = hhagpBLvGn.Position
-                        local OObZgzQe = (max - WmxWeMjq) * 1.2
-                        if not CEACBgea[player] then
-                            local iRyTRlqDJEh = Instance.new(base64decode("UGFydA=="), game.FIOlBuPjUd)
-                            iRyTRlqDJEh.Name = base64decode("RVNQX0JveA==")
-                            iRyTRlqDJEh.Size = OObZgzQe
-                            iRyTRlqDJEh.Anchored = true
-                            iRyTRlqDJEh.CanCollide = false
-                            iRyTRlqDJEh.Position = GswBtLirT
-                            iRyTRlqDJEh.Color = Color3.fromRGB(128, 0, 255)
-                            iRyTRlqDJEh.Transparency = 0.5
-                            CEACBgea[player] = iRyTRlqDJEh
+--// Box ESP
+local function updateBoxESP()
+    pcall(function()
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= Player and player.Character and player.Character:FindFirstChild("Head") then
+                local head = player.Character.Head
+                local h = player.Character:FindFirstChild("Humanoid")
+                if h and h.Health > 0 then
+                    local _, onScreen = camera:WorldToViewportPoint(head.Position)
+                    if onScreen and boxEspEnabled then
+                        local min, max = head.Position - Vector3.new(1, 1, 1), head.Position + Vector3.new(1, 1, 1)
+                        local center = head.Position
+                        local size = (max - min) * 1.2
+                        if not espHandles[player] then
+                            local box = Instance.new("Part", game.Workspace)
+                            box.Name = "ESP_Box"
+                            box.Size = size
+                            box.Anchored = true
+                            box.CanCollide = false
+                            box.Position = center
+                            box.Color = Color3.fromRGB(128, 0, 255)
+                            box.Transparency = 0.5
+                            espHandles[player] = box
                         else
-                            local iRyTRlqDJEh = CEACBgea[player]
-                            iRyTRlqDJEh.Size = OObZgzQe
-                            iRyTRlqDJEh.Position = GswBtLirT
+                            local box = espHandles[player]
+                            box.Size = size
+                            box.Position = center
                         end
-                    elseif CEACBgea[player] then
-                        CEACBgea[player]:Destroy()
-                        CEACBgea[player] = nil
+                    elseif espHandles[player] then
+                        espHandles[player]:Destroy()
+                        espHandles[player] = nil
                     end
-                elseif CEACBgea[player] then
-                    CEACBgea[player]:Destroy()
-                    CEACBgea[player] = nil
+                elseif espHandles[player] then
+                    espHandles[player]:Destroy()
+                    espHandles[player] = nil
                 end
-            elseif CEACBgea[player] then
-                CEACBgea[player]:Destroy()
-                CEACBgea[player] = nil
+            elseif espHandles[player] then
+                espHandles[player]:Destroy()
+                espHandles[player] = nil
             end
         end
     end)
 end
 
-
-local DzurruoTdD createLine()
-    local rspBNSQI = Drawing.new(base64decode("TGluZQ=="))
-    rspBNSQI.Thickness = 2
-    rspBNSQI.Color = Color3.fromRGB(128, 0, 255)
-    rspBNSQI.Visible = false
-    return rspBNSQI
+--// Skeleton ESP
+local function createLine()
+    local line = Drawing.new("Line")
+    line.Thickness = 2
+    line.Color = Color3.fromRGB(128, 0, 255)
+    line.Visible = false
+    return line
 end
 
-local PgjwOGVn = {
-    {base64decode("SGVhZA=="), base64decode("VXBwZXJUb3Jzbw==")},
-    {base64decode("VXBwZXJUb3Jzbw=="), base64decode("TG93ZXJUb3Jzbw==")},
-    {base64decode("VXBwZXJUb3Jzbw=="), base64decode("TGVmdFVwcGVyQXJt")},
-    {base64decode("TGVmdFVwcGVyQXJt"), base64decode("TGVmdExvd2VyQXJt")},
-    {base64decode("TGVmdExvd2VyQXJt"), base64decode("TGVmdEhhbmQ=")},
-    {base64decode("VXBwZXJUb3Jzbw=="), base64decode("UmlnaHRVcHBlckFybQ==")},
-    {base64decode("UmlnaHRVcHBlckFybQ=="), base64decode("UmlnaHRMb3dlckFybQ==")},
-    {base64decode("UmlnaHRMb3dlckFybQ=="), base64decode("UmlnaHRIYW5k")},
-    {base64decode("TG93ZXJUb3Jzbw=="), base64decode("TGVmdFVwcGVyTGVn")},
-    {base64decode("TGVmdFVwcGVyTGVn"), base64decode("TGVmdExvd2VyTGVn")},
-    {base64decode("TGVmdExvd2VyTGVn"), base64decode("TGVmdEZvb3Q=")},
-    {base64decode("TG93ZXJUb3Jzbw=="), base64decode("UmlnaHRVcHBlckxlZw==")},
-    {base64decode("UmlnaHRVcHBlckxlZw=="), base64decode("UmlnaHRMb3dlckxlZw==")},
-    {base64decode("UmlnaHRMb3dlckxlZw=="), base64decode("UmlnaHRGb290")},
+local R15Connections = {
+    {"Head", "UpperTorso"},
+    {"UpperTorso", "LowerTorso"},
+    {"UpperTorso", "LeftUpperArm"},
+    {"LeftUpperArm", "LeftLowerArm"},
+    {"LeftLowerArm", "LeftHand"},
+    {"UpperTorso", "RightUpperArm"},
+    {"RightUpperArm", "RightLowerArm"},
+    {"RightLowerArm", "RightHand"},
+    {"LowerTorso", "LeftUpperLeg"},
+    {"LeftUpperLeg", "LeftLowerLeg"},
+    {"LeftLowerLeg", "LeftFoot"},
+    {"LowerTorso", "RightUpperLeg"},
+    {"RightUpperLeg", "RightLowerLeg"},
+    {"RightLowerLeg", "RightFoot"},
 }
 
-local wnHphNi = {
-    {base64decode("SGVhZA=="), base64decode("VG9yc28=")},
-    {base64decode("VG9yc28="), base64decode("TGVmdCBBcm0=")},
-    {base64decode("VG9yc28="), base64decode("UmlnaHQgQXJt")},
-    {base64decode("VG9yc28="), base64decode("TGVmdCBMZWc=")},
-    {base64decode("VG9yc28="), base64decode("UmlnaHQgTGVn")},
+local R6Connections = {
+    {"Head", "Torso"},
+    {"Torso", "Left Arm"},
+    {"Torso", "Right Arm"},
+    {"Torso", "Left Leg"},
+    {"Torso", "Right Leg"},
 }
 
-local DzurruoTdD getRigType(character)
-    local EpdiyNLX = character:FindFirstChildOfClass(base64decode("YWZQWlhodEZuWEk="))
-    return EpdiyNLX and EpdiyNLX.RigType or Enum.HumanoidRigType.R15
+local function getRigType(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    return humanoid and humanoid.RigType or Enum.HumanoidRigType.R15
 end
 
-local DzurruoTdD clearSkeleton(player)
-    if iVBoLA[player] then
-        for cgYydSD, rspBNSQI in pairs(iVBoLA[player].Lines) do
-            rspBNSQI.Visible = false
-            rspBNSQI:Remove()
+local function clearSkeleton(player)
+    if Skeletons[player] then
+        for _, line in pairs(Skeletons[player].Lines) do
+            line.Visible = false
+            line:Remove()
         end
-        iVBoLA[player] = nil
+        Skeletons[player] = nil
     end
 end
 
-local DzurruoTdD setupSkeleton(player)
-    if player == kNqmJPeTg then return end
-    if iVBoLA[player] then clearSkeleton(player) end
-    iVBoLA[player] = {Lines = {}, RigType = Enum.HumanoidRigType.R15, uqERhL = nil}
-    local DzurruoTdD onCharacterAdded(character)
+local function setupSkeleton(player)
+    if player == Player then return end
+    if Skeletons[player] then clearSkeleton(player) end
+    Skeletons[player] = {Lines = {}, RigType = Enum.HumanoidRigType.R15, Character = nil}
+    local function onCharacterAdded(character)
         clearSkeleton(player)
-        iVBoLA[player] = {Lines = {}, RigType = getRigType(character), uqERhL = character}
-        local wLxsHavz = (iVBoLA[player].RigType == Enum.HumanoidRigType.R6) and wnHphNi or PgjwOGVn
-        for cgYydSD = 1, #wLxsHavz do table.insert(iVBoLA[player].Lines, createLine()) end
+        Skeletons[player] = {Lines = {}, RigType = getRigType(character), Character = character}
+        local connections = (Skeletons[player].RigType == Enum.HumanoidRigType.R6) and R6Connections or R15Connections
+        for _ = 1, #connections do table.insert(Skeletons[player].Lines, createLine()) end
     end
     player.CharacterAdded:Connect(onCharacterAdded)
-    if player.uqERhL then onCharacterAdded(player.uqERhL) end
+    if player.Character then onCharacterAdded(player.Character) end
 end
 
+--// Aimbot Logic
+local aiming = false
+local lockedTarget = nil
 
-local KowcEvps = false
-local TQckCt = nil
-
-local DzurruoTdD getClosestTarget(radius)
-    local nAFmqty, bestPl = math.huge, nil
-    local skjPYOnl, my = IoeaaWlqUog:GetMouseLocation().X, IoeaaWlqUog:GetMouseLocation().Y
-    for cgYydSD, pl in ipairs(hriMBZWkfZ:GetPlayers()) do
-        if pl ~= kNqmJPeTg and pl.uqERhL and pl.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
-            local hAlkBITigo = pl.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk="))
-            if hAlkBITigo and hAlkBITigo.Health > 0 then
-                local hhagpBLvGn = pl.uqERhL.Head
-                local OcTcBKHSgF, onScreen = qGQxBvQJLgL:WorldToScreenPoint(hhagpBLvGn.Position)
+local function getClosestTarget(radius)
+    local bestDist, bestPl = math.huge, nil
+    local mx, my = UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y
+    for _, pl in ipairs(Players:GetPlayers()) do
+        if pl ~= Player and pl.Character and pl.Character:FindFirstChild("Head") then
+            local h = pl.Character:FindFirstChild("Humanoid")
+            if h and h.Health > 0 then
+                local head = pl.Character.Head
+                local screenPos, onScreen = camera:WorldToScreenPoint(head.Position)
                 if onScreen then
-                    local guljeetzPmc = (Vector2.new(OcTcBKHSgF.X, OcTcBKHSgF.Y) - Vector2.new(skjPYOnl, my)).Magnitude
-                    if guljeetzPmc < nAFmqty and guljeetzPmc <= radius then
-                        nAFmqty, bestPl = guljeetzPmc, pl
+                    local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(mx, my)).Magnitude
+                    if dist < bestDist and dist <= radius then
+                        bestDist, bestPl = dist, pl
                     end
                 end
             end
@@ -467,66 +449,66 @@ local DzurruoTdD getClosestTarget(radius)
     return bestPl
 end
 
-
-local DzurruoTdD updateNoClip()
-    pcall(DzurruoTdD()
-        if wujpYbWfO and kNqmJPeTg.uqERhL then
-            for cgYydSD, part in pairs(kNqmJPeTg.uqERhL:GetDescendants()) do
-                if part:IsA(base64decode("QmFzZVBhcnQ=")) then part.CanCollide = false end
+--// NoClip Logic
+local function updateNoClip()
+    pcall(function()
+        if noClipEnabled and Player.Character then
+            for _, part in pairs(Player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
             end
             task.wait(0.05)
-        elseif kNqmJPeTg.uqERhL then
-            for cgYydSD, part in pairs(kNqmJPeTg.uqERhL:GetDescendants()) do
-                if part:IsA(base64decode("QmFzZVBhcnQ=")) then part.CanCollide = true end
+        elseif Player.Character then
+            for _, part in pairs(Player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = true end
             end
         end
     end)
 end
 
-
-local DzurruoTdD updateFly()
-    pcall(DzurruoTdD()
-        if OVRyyPmY and kNqmJPeTg.uqERhL then
-            local TSRuKKlT = kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA=="))
-            if TSRuKKlT then
-                if not bSqKdsv then
-                    bSqKdsv = vXYACT.RenderStepped:Connect(DzurruoTdD()
-                        pcall(DzurruoTdD()
-                            if not OVRyyPmY or not kNqmJPeTg.uqERhL or not kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA==")) then return end
-                            local xUieRhG = Vector3.new(0, 0, 0)
-                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.W) then xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.LookVector end
-                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.S) then xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.LookVector end
-                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.A) then xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.RightVector end
-                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.D) then xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.RightVector end
-                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.Space) then xUieRhG = xUieRhG + Vector3.new(0, 1, 0) end
-                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.LeftControl) then xUieRhG = xUieRhG - Vector3.new(0, 1, 0) end
-                            if xUieRhG.Magnitude > 0 then TSRuKKlT.Velocity = xUieRhG.unit * LsXrtpb else TSRuKKlT.Velocity = Vector3.new(0, 0, 0) end
-                            TSRuKKlT.CFrame = CFrame.new(TSRuKKlT.Position, TSRuKKlT.Position + qGQxBvQJLgL.CFrame.LookVector)
+--// Fly Logic
+local function updateFly()
+    pcall(function()
+        if flyEnabled and Player.Character then
+            local hrp = Player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                if not flyConnection then
+                    flyConnection = RunService.RenderStepped:Connect(function()
+                        pcall(function()
+                            if not flyEnabled or not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") then return end
+                            local moveDirection = Vector3.new(0, 0, 0)
+                            if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDirection = moveDirection + camera.CFrame.LookVector end
+                            if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDirection = moveDirection - camera.CFrame.LookVector end
+                            if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDirection = moveDirection - camera.CFrame.RightVector end
+                            if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDirection = moveDirection + camera.CFrame.RightVector end
+                            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDirection = moveDirection + Vector3.new(0, 1, 0) end
+                            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveDirection = moveDirection - Vector3.new(0, 1, 0) end
+                            if moveDirection.Magnitude > 0 then hrp.Velocity = moveDirection.unit * flySpeed else hrp.Velocity = Vector3.new(0, 0, 0) end
+                            hrp.CFrame = CFrame.new(hrp.Position, hrp.Position + camera.CFrame.LookVector)
                             task.wait(0.05)
                         end)
                     end)
                 end
-                afPZXhtFnXI:ChangeState(Enum.HumanoidStateType.Physics)
+                Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
             end
         else
-            if bSqKdsv then bSqKdsv:Disconnect() bSqKdsv = nil end
-            if kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk=")) then afPZXhtFnXI:ChangeState(Enum.HumanoidStateType.Running) end
+            if flyConnection then flyConnection:Disconnect() flyConnection = nil end
+            if Player.Character and Player.Character:FindFirstChild("Humanoid") then Humanoid:ChangeState(Enum.HumanoidStateType.Running) end
         end
     end)
 end
 
-
-local DzurruoTdD autoShoot()
-    pcall(DzurruoTdD()
-        if DWMUQYs and kNqmJPeTg.uqERhL then
-            local PXKulAt = getClosestTarget(HdXpffjnS)
-            if PXKulAt and PXKulAt.uqERhL and PXKulAt.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
-                local GElvzzlL = kNqmJPeTg.uqERhL:FindFirstChildOfClass(base64decode("VG9vbA=="))
-                if GElvzzlL then
-                    local XtkNGsXYaL = kNqmJPeTg:GetMouse()
-                    XtkNGsXYaL.Target = PXKulAt.uqERhL.Head
-                    XtkNGsXYaL.Hit = CFrame.new(PXKulAt.uqERhL.Head.Position)
-                    GElvzzlL:Activate()
+--// Rage Bot Auto-Shoot
+local function autoShoot()
+    pcall(function()
+        if rageBotEnabled and Player.Character then
+            local target = getClosestTarget(aimRadius)
+            if target and target.Character and target.Character:FindFirstChild("Head") then
+                local tool = Player.Character:FindFirstChildOfClass("Tool")
+                if tool then
+                    local mouse = Player:GetMouse()
+                    mouse.Target = target.Character.Head
+                    mouse.Hit = CFrame.new(target.Character.Head.Position)
+                    tool:Activate()
                     task.wait(0.1)
                 end
             end
@@ -534,239 +516,239 @@ local DzurruoTdD autoShoot()
     end)
 end
 
-
-for cgYydSD, player in ipairs(hriMBZWkfZ:GetPlayers()) do
-    if player ~= kNqmJPeTg then pcall(DzurruoTdD() setupSkeleton(player) end) end
+--// Setup Skeletons
+for _, player in ipairs(Players:GetPlayers()) do
+    if player ~= Player then pcall(function() setupSkeleton(player) end) end
 end
 
-
-local uNvDLLdeRqv, BoxESPIndicator = makeToggle(oyogeaDV, 10, base64decode("Qm94IEVTUA=="), DzurruoTdD(QpNEYp)
-    tgwZPjvctvJ = QpNEYp
+--// Toggles and Sliders
+local BoxESPToggle, BoxESPIndicator = makeToggle(ScrollingFrame, 10, "Box ESP", function(isOn)
+    boxEspEnabled = isOn
     updateBoxESP()
 end)
 
-local MllBiQJE, SkeletonESPIndicator = makeToggle(oyogeaDV, 60, base64decode("U2tlbGV0b24gRVNQ"), DzurruoTdD(QpNEYp)
-    wtNjFgu = QpNEYp
-    if not wtNjFgu then
-        for cgYydSD, playerSkeleton in pairs(iVBoLA) do
+local SkeletonESPToggle, SkeletonESPIndicator = makeToggle(ScrollingFrame, 60, "Skeleton ESP", function(isOn)
+    skeletonEspEnabled = isOn
+    if not skeletonEspEnabled then
+        for _, playerSkeleton in pairs(Skeletons) do
             if playerSkeleton then
-                for cgYydSD, rspBNSQI in pairs(playerSkeleton.Lines) do
-                    rspBNSQI.Visible = false
+                for _, line in pairs(playerSkeleton.Lines) do
+                    line.Visible = false
                 end
             end
         end
     end
 end)
 
-local IJSSSDjFMvl, AimbotIndicator = makeToggle(oyogeaDV, 110, base64decode("QWltYm90"), DzurruoTdD(QpNEYp)
-    cZzacYq = QpNEYp
-    MReBkC.Visible = cZzacYq
-    if cZzacYq then
-        DWMUQYs = false
-        bjJXMIPjcbb = false
+local AimbotToggle, AimbotIndicator = makeToggle(ScrollingFrame, 110, "Aimbot", function(isOn)
+    aimbotEnabled = isOn
+    fovCircle.Visible = aimbotEnabled
+    if aimbotEnabled then
+        rageBotEnabled = false
+        softAimEnabled = false
         RageBotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
         SoftAimIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
-        IDGRykDGLmE.Visible = false
+        softAimCircle.Visible = false
     end
 end)
 
-local zYSjIKOvgU, RageBotIndicator = makeToggle(oyogeaDV, 160, base64decode("UmFnZSBCb3Q="), DzurruoTdD(QpNEYp)
-    DWMUQYs = QpNEYp
-    MReBkC.Visible = DWMUQYs
-    if DWMUQYs then
-        cZzacYq = false
-        bjJXMIPjcbb = false
+local RageBotToggle, RageBotIndicator = makeToggle(ScrollingFrame, 160, "Rage Bot", function(isOn)
+    rageBotEnabled = isOn
+    fovCircle.Visible = rageBotEnabled
+    if rageBotEnabled then
+        aimbotEnabled = false
+        softAimEnabled = false
         AimbotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
         SoftAimIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
-        IDGRykDGLmE.Visible = false
-        OVRyyPmY = true
+        softAimCircle.Visible = false
+        flyEnabled = true
         FlyIndicator.BackgroundColor3 = Color3.fromRGB(200, 0, 255)
         updateFly()
     end
 end)
 
-local BbxBuQPi, SoftAimIndicator = makeToggle(oyogeaDV, 210, base64decode("U29mdCBBaW0="), DzurruoTdD(QpNEYp)
-    bjJXMIPjcbb = QpNEYp
-    IDGRykDGLmE.Visible = bjJXMIPjcbb
-    if bjJXMIPjcbb then
-        cZzacYq = false
-        DWMUQYs = false
+local SoftAimToggle, SoftAimIndicator = makeToggle(ScrollingFrame, 210, "Soft Aim", function(isOn)
+    softAimEnabled = isOn
+    softAimCircle.Visible = softAimEnabled
+    if softAimEnabled then
+        aimbotEnabled = false
+        rageBotEnabled = false
         AimbotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
         RageBotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
-        MReBkC.Visible = false
+        fovCircle.Visible = false
     end
 end)
 
-local gbMeDKS, NoClipIndicator = makeToggle(oyogeaDV, 260, base64decode("Tm9DbGlw"), DzurruoTdD(QpNEYp)
-    wujpYbWfO = QpNEYp
+local NoClipToggle, NoClipIndicator = makeToggle(ScrollingFrame, 260, "NoClip", function(isOn)
+    noClipEnabled = isOn
     updateNoClip()
 end)
 
-local UzeUkD, FlyIndicator = makeToggle(oyogeaDV, 310, base64decode("Rmx5"), DzurruoTdD(QpNEYp)
-    OVRyyPmY = QpNEYp
+local FlyToggle, FlyIndicator = makeToggle(ScrollingFrame, 310, "Fly", function(isOn)
+    flyEnabled = isOn
     updateFly()
 end)
 
-local ntsAgUj, ThirdPersonIndicator = makeToggle(oyogeaDV, 360, base64decode("VGhpcmQgUGVyc29u"), DzurruoTdD(QpNEYp)
-    uSHyCqQ = QpNEYp
+local ThirdPersonToggle, ThirdPersonIndicator = makeToggle(ScrollingFrame, 360, "Third Person", function(isOn)
+    thirdPersonEnabled = isOn
     updateThirdPerson()
 end)
 
-local NkqRvbOPXn, DashIndicator
-local IxmOFXRGBHQ
-local rykobxocw
+local DashToggle, DashIndicator
+local DashSlider
+local FOVSlider
 
-local DzurruoTdD updateCanvasSize()
-    if YvzIcPBU then
-        oyogeaDV.CanvasSize = UDim2.new(0, 0, 0, 810)
+local function updateCanvasSize()
+    if dashEnabled then
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 810)
     else
-        oyogeaDV.CanvasSize = UDim2.new(0, 0, 0, 750)
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 750)
     end
 end
 
-NkqRvbOPXn, DashIndicator = makeToggle(oyogeaDV, 410, base64decode("RGFzaA=="), DzurruoTdD(QpNEYp)
-    YvzIcPBU = QpNEYp
-    IxmOFXRGBHQ.Visible = YvzIcPBU
+DashToggle, DashIndicator = makeToggle(ScrollingFrame, 410, "Dash", function(isOn)
+    dashEnabled = isOn
+    DashSlider.Visible = dashEnabled
     updateCanvasSize()
 end)
 
-IxmOFXRGBHQ = makeSlider(oyogeaDV, 460, base64decode("RGFzaCBTcGVlZA=="), 20, 100, OyXufEZ, DzurruoTdD(xdLgOql)
-    OyXufEZ = xdLgOql
+DashSlider = makeSlider(ScrollingFrame, 460, "Dash Speed", 20, 100, dashSpeed, function(value)
+    dashSpeed = value
 end)
-IxmOFXRGBHQ.Visible = false
+DashSlider.Visible = false
 
-rykobxocw = makeSlider(oyogeaDV, YvzIcPBU and 530 or 470, base64decode("QWltYm90IEZPVg=="), 50, 500, HdXpffjnS, DzurruoTdD(xdLgOql)
-    HdXpffjnS = xdLgOql
-    MReBkC.Radius = xdLgOql
-end)
-
-local qZTnTxgfJgH = makeSlider(oyogeaDV, YvzIcPBU and 590 or 530, base64decode("Rmx5IFNwZWVk"), 50, 200, LsXrtpb, DzurruoTdD(xdLgOql)
-    LsXrtpb = xdLgOql
+FOVSlider = makeSlider(ScrollingFrame, dashEnabled and 530 or 470, "Aimbot FOV", 50, 500, aimRadius, function(value)
+    aimRadius = value
+    fovCircle.Radius = value
 end)
 
-
-local UPbFNDo, DestroyIndicator = makeToggle(oyogeaDV, YvzIcPBU and 650 or 590, base64decode("RGVzdHJveSBNZW51"), DzurruoTdD()
-    kxDKPgEv:Destroy()
+local FlySpeedSlider = makeSlider(ScrollingFrame, dashEnabled and 590 or 530, "Fly Speed", 50, 200, flySpeed, function(value)
+    flySpeed = value
 end)
-UPbFNDo.TextColor3 = Color3.new(1, 0, 0) 
 
+--// Destroy Menu Button
+local DestroyButton, DestroyIndicator = makeToggle(ScrollingFrame, dashEnabled and 650 or 590, "Destroy Menu", function()
+    EspGui:Destroy()
+end)
+DestroyButton.TextColor3 = Color3.new(1, 0, 0) -- Red text to indicate destructive action
 
-table.insert(AiiRdrz, IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+--// Aimbot Connections
+table.insert(aimbotConnections, UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.UserInputType == Enum.UserInputType.MouseButton2 then
-        KowcEvps = true
-        TQckCt = getClosestTarget(bjJXMIPjcbb and EdPbzfb or HdXpffjnS)
+        aiming = true
+        lockedTarget = getClosestTarget(softAimEnabled and softAimRadius or aimRadius)
     end
 end))
 
-table.insert(AiiRdrz, IoeaaWlqUog.InputEnded:Connect(DzurruoTdD(input, processed)
+table.insert(aimbotConnections, UserInputService.InputEnded:Connect(function(input, processed)
     if processed then return end
     if input.UserInputType == Enum.UserInputType.MouseButton2 then
-        KowcEvps = false
-        TQckCt = nil
+        aiming = false
+        lockedTarget = nil
     end
 end))
 
-
-IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+--// Dash Input
+UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.KeyCode == Enum.KeyCode.LeftShift then
         performDash()
     end
 end)
 
-
-IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+--// Mouse Lock Toggle with Tab
+UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.KeyCode == Enum.KeyCode.Tab then
-        pcall(DzurruoTdD()
-            pzrAUafj:Play()
-            uvLgjiQf = not uvLgjiQf
-            IoeaaWlqUog.MouseBehavior = uvLgjiQf and Enum.MouseBehavior.LockCenter or Enum.MouseBehavior.Default
+        pcall(function()
+            ClickSound:Play()
+            mouseLocked = not mouseLocked
+            UserInputService.MouseBehavior = mouseLocked and Enum.MouseBehavior.LockCenter or Enum.MouseBehavior.Default
         end)
     end
 end)
 
+--// Update Loop
+local renderSteppedConnection = RunService.RenderStepped:Connect(function()
+    pcall(function()
+        if not camera then return end
+        local mx, my = UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y
+        fovCircle.Position = Vector2.new(mx, my)
+        softAimCircle.Position = Vector2.new(mx, my)
+        fovCircle.Visible = aimbotEnabled or rageBotEnabled
+        softAimCircle.Visible = softAimEnabled
 
-local HeWFYsk = vXYACT.RenderStepped:Connect(DzurruoTdD()
-    pcall(DzurruoTdD()
-        if not qGQxBvQJLgL then return end
-        local skjPYOnl, my = IoeaaWlqUog:GetMouseLocation().X, IoeaaWlqUog:GetMouseLocation().Y
-        MReBkC.Position = Vector2.new(skjPYOnl, my)
-        IDGRykDGLmE.Position = Vector2.new(skjPYOnl, my)
-        MReBkC.Visible = cZzacYq or DWMUQYs
-        IDGRykDGLmE.Visible = bjJXMIPjcbb
-
-        if KowcEvps and (cZzacYq or DWMUQYs or bjJXMIPjcbb) then
-            local PXKulAt = TQckCt or getClosestTarget(bjJXMIPjcbb and EdPbzfb or HdXpffjnS)
-            if PXKulAt and PXKulAt.uqERhL then
-                local hhagpBLvGn = PXKulAt.uqERhL:FindFirstChild(base64decode("SGVhZA=="))
-                if hhagpBLvGn then
-                    if DWMUQYs then
-                        qGQxBvQJLgL.CFrame = CFrame.new(qGQxBvQJLgL.CFrame.Position, hhagpBLvGn.Position)
-                    elseif cZzacYq then
-                        local NsJlxKhmUr = qGQxBvQJLgL.CFrame.LookVector
-                        local tzvYKX = (hhagpBLvGn.Position - qGQxBvQJLgL.CFrame.Position).Unit
-                        local EunwJK = NsJlxKhmUr:Lerp(tzvYKX, 0.5)
-                        qGQxBvQJLgL.CFrame = CFrame.new(qGQxBvQJLgL.CFrame.Position, qGQxBvQJLgL.CFrame.Position + EunwJK)
-                    elseif bjJXMIPjcbb then
-                        local NsJlxKhmUr = qGQxBvQJLgL.CFrame.LookVector
-                        local tzvYKX = (hhagpBLvGn.Position - qGQxBvQJLgL.CFrame.Position).Unit
-                        local EunwJK = NsJlxKhmUr:Lerp(tzvYKX, 0.2)
-                        qGQxBvQJLgL.CFrame = CFrame.new(qGQxBvQJLgL.CFrame.Position, qGQxBvQJLgL.CFrame.Position + EunwJK)
+        if aiming and (aimbotEnabled or rageBotEnabled or softAimEnabled) then
+            local target = lockedTarget or getClosestTarget(softAimEnabled and softAimRadius or aimRadius)
+            if target and target.Character then
+                local head = target.Character:FindFirstChild("Head")
+                if head then
+                    if rageBotEnabled then
+                        camera.CFrame = CFrame.new(camera.CFrame.Position, head.Position)
+                    elseif aimbotEnabled then
+                        local currentLook = camera.CFrame.LookVector
+                        local targetDir = (head.Position - camera.CFrame.Position).Unit
+                        local newDir = currentLook:Lerp(targetDir, 0.5)
+                        camera.CFrame = CFrame.new(camera.CFrame.Position, camera.CFrame.Position + newDir)
+                    elseif softAimEnabled then
+                        local currentLook = camera.CFrame.LookVector
+                        local targetDir = (head.Position - camera.CFrame.Position).Unit
+                        local newDir = currentLook:Lerp(targetDir, 0.2)
+                        camera.CFrame = CFrame.new(camera.CFrame.Position, camera.CFrame.Position + newDir)
                     end
                 end
             end
         end
 
-        if wtNjFgu then
-            for player, data in pairs(iVBoLA) do
-                if data.uqERhL and data.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
-                    local hAlkBITigo = data.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk="))
-                    if hAlkBITigo and hAlkBITigo.Health > 0 then
-                        local hhagpBLvGn = data.uqERhL.Head
-                        local cgYydSD, headOnScreen = qGQxBvQJLgL:WorldToViewportPoint(hhagpBLvGn.Position)
+        if skeletonEspEnabled then
+            for player, data in pairs(Skeletons) do
+                if data.Character and data.Character:FindFirstChild("Head") then
+                    local h = data.Character:FindFirstChild("Humanoid")
+                    if h and h.Health > 0 then
+                        local head = data.Character.Head
+                        local _, headOnScreen = camera:WorldToViewportPoint(head.Position)
                         if headOnScreen then
-                            local wLxsHavz = (data.RigType == Enum.HumanoidRigType.R6) and wnHphNi or PgjwOGVn
-                            for i, parts in ipairs(wLxsHavz) do
-                                local hplcopBmtr = data.uqERhL:FindFirstChild(parts[1])
-                                local wvSjHOKw = data.uqERhL:FindFirstChild(parts[2])
-                                local rspBNSQI = data.Lines[i]
-                                if hplcopBmtr and wvSjHOKw then
-                                    local VOmgmHXO, onScreen0 = qGQxBvQJLgL:WorldToViewportPoint(hplcopBmtr.Position)
-                                    local zrIYxpvVkF, onScreen1 = qGQxBvQJLgL:WorldToViewportPoint(wvSjHOKw.Position)
+                            local connections = (data.RigType == Enum.HumanoidRigType.R6) and R6Connections or R15Connections
+                            for i, parts in ipairs(connections) do
+                                local part0 = data.Character:FindFirstChild(parts[1])
+                                local part1 = data.Character:FindFirstChild(parts[2])
+                                local line = data.Lines[i]
+                                if part0 and part1 then
+                                    local pos0, onScreen0 = camera:WorldToViewportPoint(part0.Position)
+                                    local pos1, onScreen1 = camera:WorldToViewportPoint(part1.Position)
                                     if onScreen0 and onScreen1 then
-                                        rspBNSQI.From = Vector2.new(VOmgmHXO.X, VOmgmHXO.Y)
-                                        rspBNSQI.To = Vector2.new(zrIYxpvVkF.X, zrIYxpvVkF.Y)
-                                        rspBNSQI.Visible = true
+                                        line.From = Vector2.new(pos0.X, pos0.Y)
+                                        line.To = Vector2.new(pos1.X, pos1.Y)
+                                        line.Visible = true
                                     else
-                                        rspBNSQI.Visible = false
+                                        line.Visible = false
                                     end
                                 else
-                                    rspBNSQI.Visible = false
+                                    line.Visible = false
                                 end
                             end
                         else
-                            for cgYydSD, rspBNSQI in pairs(data.Lines) do
-                                rspBNSQI.Visible = false
+                            for _, line in pairs(data.Lines) do
+                                line.Visible = false
                             end
                         end
                     else
-                        for cgYydSD, rspBNSQI in pairs(data.Lines) do
-                            rspBNSQI.Visible = false
+                        for _, line in pairs(data.Lines) do
+                            line.Visible = false
                         end
                     end
                 else
-                    for cgYydSD, rspBNSQI in pairs(data.Lines) do
-                        rspBNSQI.Visible = false
+                    for _, line in pairs(data.Lines) do
+                        line.Visible = false
                     end
                 end
             end
         else
-            for cgYydSD, playerSkeleton in pairs(iVBoLA) do
+            for _, playerSkeleton in pairs(Skeletons) do
                 if playerSkeleton then
-                    for cgYydSD, rspBNSQI in pairs(playerSkeleton.Lines) do
-                        rspBNSQI.Visible = false
+                    for _, line in pairs(playerSkeleton.Lines) do
+                        line.Visible = false
                     end
                 end
             end
@@ -780,68 +762,68 @@ local HeWFYsk = vXYACT.RenderStepped:Connect(DzurruoTdD()
     end)
 end)
 
-
-local ChgeGn = hriMBZWkfZ.PlayerAdded:Connect(DzurruoTdD(player)
-    if player ~= kNqmJPeTg then pcall(DzurruoTdD() setupSkeleton(player) end) end
+--// Player Connections
+local playerAddedConnection = Players.PlayerAdded:Connect(function(player)
+    if player ~= Player then pcall(function() setupSkeleton(player) end) end
 end)
 
-local iuNyLnlSt = hriMBZWkfZ.PlayerRemoving:Connect(DzurruoTdD(player)
-    pcall(DzurruoTdD()
+local playerRemovingConnection = Players.PlayerRemoving:Connect(function(player)
+    pcall(function()
         clearSkeleton(player)
-        if CEACBgea[player] then
-            local iRyTRlqDJEh = CEACBgea[player]
-            if iRyTRlqDJEh and iRyTRlqDJEh.Parent then iRyTRlqDJEh:Destroy() end
-            CEACBgea[player] = nil
+        if espHandles[player] then
+            local box = espHandles[player]
+            if box and box.Parent then box:Destroy() end
+            espHandles[player] = nil
         end
     end)
 end)
 
-
-kNqmJPeTg.CharacterAdded:Connect(DzurruoTdD(character)
-    pcall(DzurruoTdD()
-        uqERhL = character
-        afPZXhtFnXI = character:WaitForChild(base64decode("YWZQWlhodEZuWEk="), 5)
+--// Character Added
+Player.CharacterAdded:Connect(function(character)
+    pcall(function()
+        Character = character
+        Humanoid = character:WaitForChild("Humanoid", 5)
         updateNoClip()
         updateFly()
         updateThirdPerson()
     end)
 end)
 
-
-IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+--// Toggle GUI with G
+UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.KeyCode == Enum.KeyCode.G then
-        pcall(DzurruoTdD()
-            pzrAUafj:Play()
-            kxDKPgEv.Enabled = not kxDKPgEv.Enabled
+        pcall(function()
+            ClickSound:Play()
+            EspGui.Enabled = not EspGui.Enabled
         end)
     end
 end)
 
-
-kxDKPgEv.Destroying:Connect(DzurruoTdD()
-    pcall(DzurruoTdD()
-        if ChgeGn then ChgeGn:Disconnect() end
-        if iuNyLnlSt then iuNyLnlSt:Disconnect() end
-        if HeWFYsk then HeWFYsk:Disconnect() end
-        if bSqKdsv then bSqKdsv:Disconnect() end
-        if BZZFFfaDpAX then BZZFFfaDpAX:Disconnect() end
-        for cgYydSD, connection in ipairs(AiiRdrz) do connection:Disconnect() end
-        for cgYydSD, iRyTRlqDJEh in pairs(CEACBgea) do if iRyTRlqDJEh and iRyTRlqDJEh.Parent then iRyTRlqDJEh:Destroy() end end
-        for cgYydSD, playerSkeleton in pairs(iVBoLA) do
+--// Cleanup
+EspGui.Destroying:Connect(function()
+    pcall(function()
+        if playerAddedConnection then playerAddedConnection:Disconnect() end
+        if playerRemovingConnection then playerRemovingConnection:Disconnect() end
+        if renderSteppedConnection then renderSteppedConnection:Disconnect() end
+        if flyConnection then flyConnection:Disconnect() end
+        if fpsConnection then fpsConnection:Disconnect() end
+        for _, connection in ipairs(aimbotConnections) do connection:Disconnect() end
+        for _, box in pairs(espHandles) do if box and box.Parent then box:Destroy() end end
+        for _, playerSkeleton in pairs(Skeletons) do
             if playerSkeleton then
-                for cgYydSD, rspBNSQI in pairs(playerSkeleton.Lines) do
-                    rspBNSQI.Visible = false
-                    rspBNSQI:Remove()
+                for _, line in pairs(playerSkeleton.Lines) do
+                    line.Visible = false
+                    line:Remove()
                 end
             end
         end
-        if MReBkC then MReBkC:Remove() end
-        if IDGRykDGLmE then IDGRykDGLmE:Remove() end
-        if cwhtZIR then cwhtZIR:Destroy() end
+        if fovCircle then fovCircle:Remove() end
+        if softAimCircle then softAimCircle:Remove() end
+        if FPSLabel then FPSLabel:Destroy() end
     end)
 end)
 
-
-print(base64decode("Uml2YWxzIEVTUCBTY3JpcHQgTG9hZGVkIFN1Y2Nlc3NmdWxseQ=="))
+--// Initial Setup
+print("Rivals ESP Script Loaded Successfully")
 updateCanvasSize()
