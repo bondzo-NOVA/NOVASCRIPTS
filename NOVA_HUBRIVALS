@@ -1,0 +1,847 @@
+
+function base64decode(data)
+    local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    data = string.gsub(data, '[^'..b..'=]', '')
+    return (data:gsub('.', function(x)
+        if (x == '=') then return '' end
+        local r,f='',(b:find(x)-1)
+        for i=6,1,-1 do r=r..(f%2^i - f%2^(i-1) > 0 and '1' or '0') end
+        return r;
+    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+        if (#x ~= 8) then return '' end
+        local c=0
+        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+        return string.char(c)
+    end))
+end
+
+
+
+local hriMBZWkfZ = game:GetService(base64decode("aHJpTUJaV2tmWg=="))
+local IoeaaWlqUog = game:GetService(base64decode("SW9lYWFXbHFVb2c="))
+local vXYACT = game:GetService(base64decode("dlhZQUNU"))
+local FIOlBuPjUd = game:GetService(base64decode("RklPbEJ1UGpVZA=="))
+local zcnpZSC = game:GetService(base64decode("emNucFpTQw=="))
+local rgWAGxakM = game:GetService(base64decode("cmdXQUd4YWtN"))
+
+
+local DzurruoTdD logError(err)
+    warn(base64decode("Uml2YWxzIEVTUCBTY3JpcHQgRXJyb3I6IA==") .. tostring(err))
+end
+
+
+local kNqmJPeTg = hriMBZWkfZ.LocalPlayer
+local fYYBHJhiNAj = kNqmJPeTg:WaitForChild(base64decode("ZllZQkhKaGlOQWo="), 5)
+local uqERhL = kNqmJPeTg.uqERhL or kNqmJPeTg.CharacterAdded:Wait()
+local afPZXhtFnXI = uqERhL:WaitForChild(base64decode("YWZQWlhodEZuWEk="), 5)
+local qGQxBvQJLgL = FIOlBuPjUd.CurrentCamera
+
+if not fYYBHJhiNAj or not afPZXhtFnXI then
+    logError(base64decode("RmFpbGVkIHRvIGluaXRpYWxpemUgZllZQkhKaGlOQWogb3IgYWZQWlhodEZuWEk="))
+    return
+end
+
+
+local cwhtZIR = Instance.new(base64decode("VGV4dExhYmVs"))
+cwhtZIR.Parent = fYYBHJhiNAj
+cwhtZIR.Size = UDim2.new(0, 100, 0, 30)
+cwhtZIR.Position = UDim2.new(1, -110, 0, 10)
+cwhtZIR.BackgroundTransparency = 0.8
+cwhtZIR.BackgroundColor3 = Color3.fromRGB(40, 20, 60)
+cwhtZIR.TextColor3 = Color3.fromRGB(128, 0, 255)
+cwhtZIR.Font = Enum.Font.Gotham
+cwhtZIR.TextSize = 16
+cwhtZIR.Text = base64decode("RlBTOiAw")
+cwhtZIR.TextXAlignment = Enum.TextXAlignment.Right
+cwhtZIR.ZIndex = 10
+local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), cwhtZIR)
+sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
+sbfSqYbuo.Thickness = 1
+sbfSqYbuo.Transparency = 0.2
+
+local UlfETw = 0
+local SdwrbgUuz = tick()
+local BZZFFfaDpAX = vXYACT.RenderStepped:Connect(DzurruoTdD()
+    UlfETw = UlfETw + 1
+    local CtvuIm = tick()
+    if CtvuIm - SdwrbgUuz >= 1 then
+        cwhtZIR.Text = base64decode("RlBTOiA=") .. tostring(math.floor(UlfETw / (CtvuIm - SdwrbgUuz)))
+        UlfETw = 0
+        SdwrbgUuz = CtvuIm
+    end
+end)
+
+
+local kxDKPgEv = Instance.new(base64decode("U2NyZWVuR3Vp"))
+kxDKPgEv.Name = base64decode("Uml2YWxzRXNwVUk=")
+kxDKPgEv.Parent = fYYBHJhiNAj
+kxDKPgEv.Enabled = true
+kxDKPgEv.ResetOnSpawn = false
+kxDKPgEv.IgnoreGuiInset = true
+
+
+local qVlyQbz = Instance.new(base64decode("RnJhbWU="), kxDKPgEv)
+qVlyQbz.Size = UDim2.new(0, 220, 0, 350)
+qVlyQbz.Position = UDim2.new(0, 10, 0, 10)
+qVlyQbz.BackgroundColor3 = Color3.fromRGB(40, 20, 60)
+qVlyQbz.BackgroundTransparency = 0.2
+Instance.new(base64decode("VUlDb3JuZXI="), qVlyQbz).CornerRadius = UDim.new(0, 12)
+local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), qVlyQbz)
+sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
+sbfSqYbuo.Thickness = 3
+sbfSqYbuo.Transparency = 0.1
+sbfSqYbuo.LineJoinMode = Enum.LineJoinMode.Round
+
+
+local oyogeaDV = Instance.new(base64decode("b3lvZ2VhRFY="), qVlyQbz)
+oyogeaDV.Size = UDim2.new(1, -20, 1, -20)
+oyogeaDV.Position = UDim2.new(0, 10, 0, 10)
+oyogeaDV.BackgroundTransparency = 1
+oyogeaDV.ScrollBarThickness = 5
+oyogeaDV.ScrollBarImageColor3 = Color3.fromRGB(128, 0, 255)
+oyogeaDV.CanvasSize = UDim2.new(0, 0, 0, 700)
+oyogeaDV.ScrollingDirection = Enum.ScrollingDirection.Y
+
+
+local LBcVHyIUp, dragInput, dragStart, startPos = false, nil, nil, nil
+qVlyQbz.InputBegan:Connect(DzurruoTdD(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        LBcVHyIUp, dragStart, startPos = true, input.Position, qVlyQbz.Position
+    end
+end)
+qVlyQbz.InputChanged:Connect(DzurruoTdD(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+qVlyQbz.InputEnded:Connect(DzurruoTdD(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        LBcVHyIUp = false
+    end
+end)
+vXYACT.RenderStepped:Connect(DzurruoTdD()
+    if LBcVHyIUp and dragInput then
+        local YokybJKn = dragInput.Position - dragStart
+        qVlyQbz.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + YokybJKn.X,
+            startPos.Y.Scale, startPos.Y.Offset + YokybJKn.Y
+        )
+    end
+end)
+
+
+local pzrAUafj = Instance.new(base64decode("U291bmQ="), kxDKPgEv)
+pzrAUafj.SoundId = base64decode("cmJ4YXNzZXRpZDovLzEwNTEyMzcyMjg4")
+pzrAUafj.Volume = 0.5
+
+
+local tgwZPjvctvJ = false
+local CEACBgea = {}
+local wtNjFgu = false
+local iVBoLA = {}
+local cZzacYq = false
+local DWMUQYs = false
+local bjJXMIPjcbb = false
+local AiiRdrz = {}
+local HdXpffjnS = 150
+local EdPbzfb = 300
+local wujpYbWfO = false
+local OVRyyPmY = false
+local uSHyCqQ = false
+local YvzIcPBU = false
+local srfVsZ = 1
+local OyXufEZ = 50
+local BTHKPVHZhE = 0.2
+local KpNLfqDtxVS = 0
+local bSqKdsv
+local uvLgjiQf = true
+local LsXrtpb = 50
+
+
+local MReBkC = Drawing.new(base64decode("Q2lyY2xl"))
+MReBkC.Color = Color3.fromRGB(128, 0, 255)
+MReBkC.Thickness = 2
+MReBkC.Filled = false
+MReBkC.Transparency = 0.7
+MReBkC.Radius = HdXpffjnS
+MReBkC.Visible = false
+
+local IDGRykDGLmE = Drawing.new(base64decode("Q2lyY2xl"))
+IDGRykDGLmE.Color = Color3.fromRGB(128, 0, 255)
+IDGRykDGLmE.Thickness = 1
+IDGRykDGLmE.Filled = false
+IDGRykDGLmE.Transparency = 0.8
+IDGRykDGLmE.Radius = EdPbzfb
+IDGRykDGLmE.Visible = false
+
+
+local DzurruoTdD makeToggle(parent, y, text, callback)
+    local EGCXzyj = Instance.new(base64decode("RnJhbWU="), parent)
+    EGCXzyj.Size = UDim2.new(0, 180, 0, 40)
+    EGCXzyj.Position = UDim2.new(0, 0, 0, y)
+    EGCXzyj.BackgroundTransparency = 1
+
+    local DVYHCpJrAq = Instance.new(base64decode("VGV4dEJ1dHRvbg=="), EGCXzyj)
+    DVYHCpJrAq.Size = UDim2.new(0, 140, 0, 40)
+    DVYHCpJrAq.Position = UDim2.new(0, 0, 0, 0)
+    DVYHCpJrAq.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
+    DVYHCpJrAq.BackgroundTransparency = 0.3
+    DVYHCpJrAq.Font = Enum.Font.GothamBold
+    DVYHCpJrAq.TextSize = 14
+    DVYHCpJrAq.TextColor3 = Color3.new(1, 1, 1)
+    DVYHCpJrAq.Text = text
+    Instance.new(base64decode("VUlDb3JuZXI="), DVYHCpJrAq).CornerRadius = UDim.new(0, 20)
+    local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), DVYHCpJrAq)
+    sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
+    sbfSqYbuo.Thickness = 2
+    sbfSqYbuo.Transparency = 0.1
+    sbfSqYbuo.LineJoinMode = Enum.LineJoinMode.Round
+
+    local jTSxGBYGZh = Instance.new(base64decode("RnJhbWU="), EGCXzyj)
+    jTSxGBYGZh.Size = UDim2.new(0, 30, 0, 30)
+    jTSxGBYGZh.Position = UDim2.new(1, -30, 0, 5)
+    jTSxGBYGZh.BackgroundColor3 = Color3.fromRGB(60, 0, 80) 
+    Instance.new(base64decode("VUlDb3JuZXI="), jTSxGBYGZh).CornerRadius = UDim.new(0, 15)
+    local lfPbwukUFc = Instance.new(base64decode("VUlTdHJva2U="), jTSxGBYGZh)
+    lfPbwukUFc.Color = Color3.fromRGB(128, 0, 255)
+    lfPbwukUFc.Thickness = 2
+    lfPbwukUFc.Transparency = 0.1
+
+    local QpNEYp = false 
+
+    DVYHCpJrAq.MouseButton1Click:Connect(DzurruoTdD()
+        pcall(DzurruoTdD()
+            pzrAUafj:Play()
+            QpNEYp = not QpNEYp
+            jTSxGBYGZh.BackgroundColor3 = QpNEYp and Color3.fromRGB(200, 0, 255) or Color3.fromRGB(60, 0, 80) 
+            callback(QpNEYp)
+        end)
+    end)
+    DVYHCpJrAq.MouseEnter:Connect(DzurruoTdD()
+        DVYHCpJrAq.BackgroundColor3 = Color3.fromRGB(80, 40, 120)
+    end)
+    DVYHCpJrAq.MouseLeave:Connect(DzurruoTdD()
+        DVYHCpJrAq.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
+    end)
+    return DVYHCpJrAq, jTSxGBYGZh
+end
+
+
+local DzurruoTdD makeSlider(parent, y, name, WmxWeMjq, max, default, callback)
+    local Amfuwvu = Instance.new(base64decode("RnJhbWU="), parent)
+    Amfuwvu.Size = UDim2.new(0, 180, 0, 60)
+    Amfuwvu.Position = UDim2.new(0, 0, 0, y)
+    Amfuwvu.BackgroundTransparency = 1
+    Amfuwvu.Visible = true
+
+    local jVvASjFRJT = Instance.new(base64decode("VGV4dExhYmVs"), Amfuwvu)
+    jVvASjFRJT.Size = UDim2.new(1, 0, 0, 20)
+    jVvASjFRJT.BackgroundTransparency = 1
+    jVvASjFRJT.Text = name .. base64decode("OiA=") .. tostring(default)
+    jVvASjFRJT.TextColor3 = Color3.new(1, 1, 1)
+    jVvASjFRJT.Font = Enum.Font.GothamBold
+    jVvASjFRJT.TextSize = 14
+
+    local BSpgGLNhdCK = Instance.new(base64decode("RnJhbWU="), Amfuwvu)
+    BSpgGLNhdCK.Size = UDim2.new(1, 0, 0, 12)
+    BSpgGLNhdCK.Position = UDim2.new(0, 0, 0, 30)
+    BSpgGLNhdCK.BackgroundColor3 = Color3.fromRGB(60, 30, 90)
+    Instance.new(base64decode("VUlDb3JuZXI="), BSpgGLNhdCK).CornerRadius = UDim.new(0, 6)
+    local sbfSqYbuo = Instance.new(base64decode("VUlTdHJva2U="), BSpgGLNhdCK)
+    sbfSqYbuo.Color = Color3.fromRGB(128, 0, 255)
+    sbfSqYbuo.Thickness = 2
+
+    local DJxyUG = Instance.new(base64decode("VGV4dEJ1dHRvbg=="), BSpgGLNhdCK)
+    DJxyUG.Size = UDim2.new(0, 20, 0, 20)
+    DJxyUG.BackgroundColor3 = Color3.fromRGB(128, 0, 255)
+    DJxyUG.Text = base64decode("")
+    Instance.new(base64decode("VUlDb3JuZXI="), DJxyUG).CornerRadius = UDim.new(0, 10)
+
+    local LBcVHyIUp = false
+    DJxyUG.InputBegan:Connect(DzurruoTdD(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            LBcVHyIUp = true
+        end
+    end)
+    DJxyUG.InputEnded:Connect(DzurruoTdD(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            LBcVHyIUp = false
+        end
+    end)
+    IoeaaWlqUog.InputChanged:Connect(DzurruoTdD(input)
+        if LBcVHyIUp and input.UserInputType == Enum.UserInputType.MouseMovement then
+            pcall(DzurruoTdD()
+                local JuGKkpyekR = math.clamp((input.Position.X - BSpgGLNhdCK.AbsolutePosition.X) / BSpgGLNhdCK.AbsoluteSize.X, 0, 1)
+                local xdLgOql = math.floor(WmxWeMjq + (max - WmxWeMjq) * JuGKkpyekR)
+                DJxyUG.Position = UDim2.new(JuGKkpyekR, -10, 0, -4)
+                jVvASjFRJT.Text = name .. base64decode("OiA=") .. tostring(xdLgOql)
+                callback(xdLgOql)
+            end)
+        end
+    end)
+
+    local yJInrj = (default - WmxWeMjq) / (max - WmxWeMjq)
+    DJxyUG.Position = UDim2.new(yJInrj, -10, 0, -4)
+
+    return Amfuwvu
+end
+
+
+local DzurruoTdD updateThirdPerson()
+    pcall(DzurruoTdD()
+        if uSHyCqQ then
+            kNqmJPeTg.CameraMode = Enum.CameraMode.Classic
+            if qGQxBvQJLgL and qGQxBvQJLgL.CameraType ~= Enum.CameraType.Custom then
+                qGQxBvQJLgL.CameraType = Enum.CameraType.Custom
+            end
+            local TSRuKKlT = kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA=="))
+            if TSRuKKlT then
+                qGQxBvQJLgL.CFrame = CFrame.new(TSRuKKlT.Position - qGQxBvQJLgL.CFrame.LookVector * 5, TSRuKKlT.Position)
+            end
+        end
+    end)
+end
+
+
+local DzurruoTdD performDash()
+    pcall(DzurruoTdD()
+        if YvzIcPBU and kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA==")) and tick() - KpNLfqDtxVS >= srfVsZ then
+            local TSRuKKlT = kNqmJPeTg.uqERhL.HumanoidRootPart
+            local xUieRhG = Vector3.new(0, 0, 0)
+            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.W) then
+                xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.LookVector
+            end
+            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.S) then
+                xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.LookVector
+            end
+            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.A) then
+                xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.RightVector
+            end
+            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.D) then
+                xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.RightVector
+            end
+            if xUieRhG.Magnitude > 0 then
+                local pSfGqxVhn = xUieRhG.unit * OyXufEZ
+                TSRuKKlT.Velocity = pSfGqxVhn
+                KpNLfqDtxVS = tick()
+                task.spawn(DzurruoTdD()
+                    task.wait(BTHKPVHZhE)
+                    if kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA==")) then
+                        TSRuKKlT.Velocity = Vector3.new(0, TSRuKKlT.Velocity.Y, 0)
+                    end
+                end)
+            end
+        end
+    end)
+end
+
+
+local DzurruoTdD updateBoxESP()
+    pcall(DzurruoTdD()
+        for cgYydSD, player in ipairs(hriMBZWkfZ:GetPlayers()) do
+            if player ~= kNqmJPeTg and player.uqERhL and player.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
+                local hhagpBLvGn = player.uqERhL.Head
+                local hAlkBITigo = player.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk="))
+                if hAlkBITigo and hAlkBITigo.Health > 0 then
+                    local cgYydSD, onScreen = qGQxBvQJLgL:WorldToViewportPoint(hhagpBLvGn.Position)
+                    if onScreen and tgwZPjvctvJ then
+                        local WmxWeMjq, max = hhagpBLvGn.Position - Vector3.new(1, 1, 1), hhagpBLvGn.Position + Vector3.new(1, 1, 1)
+                        local GswBtLirT = hhagpBLvGn.Position
+                        local OObZgzQe = (max - WmxWeMjq) * 1.2
+                        if not CEACBgea[player] then
+                            local iRyTRlqDJEh = Instance.new(base64decode("UGFydA=="), game.FIOlBuPjUd)
+                            iRyTRlqDJEh.Name = base64decode("RVNQX0JveA==")
+                            iRyTRlqDJEh.Size = OObZgzQe
+                            iRyTRlqDJEh.Anchored = true
+                            iRyTRlqDJEh.CanCollide = false
+                            iRyTRlqDJEh.Position = GswBtLirT
+                            iRyTRlqDJEh.Color = Color3.fromRGB(128, 0, 255)
+                            iRyTRlqDJEh.Transparency = 0.5
+                            CEACBgea[player] = iRyTRlqDJEh
+                        else
+                            local iRyTRlqDJEh = CEACBgea[player]
+                            iRyTRlqDJEh.Size = OObZgzQe
+                            iRyTRlqDJEh.Position = GswBtLirT
+                        end
+                    elseif CEACBgea[player] then
+                        CEACBgea[player]:Destroy()
+                        CEACBgea[player] = nil
+                    end
+                elseif CEACBgea[player] then
+                    CEACBgea[player]:Destroy()
+                    CEACBgea[player] = nil
+                end
+            elseif CEACBgea[player] then
+                CEACBgea[player]:Destroy()
+                CEACBgea[player] = nil
+            end
+        end
+    end)
+end
+
+
+local DzurruoTdD createLine()
+    local rspBNSQI = Drawing.new(base64decode("TGluZQ=="))
+    rspBNSQI.Thickness = 2
+    rspBNSQI.Color = Color3.fromRGB(128, 0, 255)
+    rspBNSQI.Visible = false
+    return rspBNSQI
+end
+
+local PgjwOGVn = {
+    {base64decode("SGVhZA=="), base64decode("VXBwZXJUb3Jzbw==")},
+    {base64decode("VXBwZXJUb3Jzbw=="), base64decode("TG93ZXJUb3Jzbw==")},
+    {base64decode("VXBwZXJUb3Jzbw=="), base64decode("TGVmdFVwcGVyQXJt")},
+    {base64decode("TGVmdFVwcGVyQXJt"), base64decode("TGVmdExvd2VyQXJt")},
+    {base64decode("TGVmdExvd2VyQXJt"), base64decode("TGVmdEhhbmQ=")},
+    {base64decode("VXBwZXJUb3Jzbw=="), base64decode("UmlnaHRVcHBlckFybQ==")},
+    {base64decode("UmlnaHRVcHBlckFybQ=="), base64decode("UmlnaHRMb3dlckFybQ==")},
+    {base64decode("UmlnaHRMb3dlckFybQ=="), base64decode("UmlnaHRIYW5k")},
+    {base64decode("TG93ZXJUb3Jzbw=="), base64decode("TGVmdFVwcGVyTGVn")},
+    {base64decode("TGVmdFVwcGVyTGVn"), base64decode("TGVmdExvd2VyTGVn")},
+    {base64decode("TGVmdExvd2VyTGVn"), base64decode("TGVmdEZvb3Q=")},
+    {base64decode("TG93ZXJUb3Jzbw=="), base64decode("UmlnaHRVcHBlckxlZw==")},
+    {base64decode("UmlnaHRVcHBlckxlZw=="), base64decode("UmlnaHRMb3dlckxlZw==")},
+    {base64decode("UmlnaHRMb3dlckxlZw=="), base64decode("UmlnaHRGb290")},
+}
+
+local wnHphNi = {
+    {base64decode("SGVhZA=="), base64decode("VG9yc28=")},
+    {base64decode("VG9yc28="), base64decode("TGVmdCBBcm0=")},
+    {base64decode("VG9yc28="), base64decode("UmlnaHQgQXJt")},
+    {base64decode("VG9yc28="), base64decode("TGVmdCBMZWc=")},
+    {base64decode("VG9yc28="), base64decode("UmlnaHQgTGVn")},
+}
+
+local DzurruoTdD getRigType(character)
+    local EpdiyNLX = character:FindFirstChildOfClass(base64decode("YWZQWlhodEZuWEk="))
+    return EpdiyNLX and EpdiyNLX.RigType or Enum.HumanoidRigType.R15
+end
+
+local DzurruoTdD clearSkeleton(player)
+    if iVBoLA[player] then
+        for cgYydSD, rspBNSQI in pairs(iVBoLA[player].Lines) do
+            rspBNSQI.Visible = false
+            rspBNSQI:Remove()
+        end
+        iVBoLA[player] = nil
+    end
+end
+
+local DzurruoTdD setupSkeleton(player)
+    if player == kNqmJPeTg then return end
+    if iVBoLA[player] then clearSkeleton(player) end
+    iVBoLA[player] = {Lines = {}, RigType = Enum.HumanoidRigType.R15, uqERhL = nil}
+    local DzurruoTdD onCharacterAdded(character)
+        clearSkeleton(player)
+        iVBoLA[player] = {Lines = {}, RigType = getRigType(character), uqERhL = character}
+        local wLxsHavz = (iVBoLA[player].RigType == Enum.HumanoidRigType.R6) and wnHphNi or PgjwOGVn
+        for cgYydSD = 1, #wLxsHavz do table.insert(iVBoLA[player].Lines, createLine()) end
+    end
+    player.CharacterAdded:Connect(onCharacterAdded)
+    if player.uqERhL then onCharacterAdded(player.uqERhL) end
+end
+
+
+local KowcEvps = false
+local TQckCt = nil
+
+local DzurruoTdD getClosestTarget(radius)
+    local nAFmqty, bestPl = math.huge, nil
+    local skjPYOnl, my = IoeaaWlqUog:GetMouseLocation().X, IoeaaWlqUog:GetMouseLocation().Y
+    for cgYydSD, pl in ipairs(hriMBZWkfZ:GetPlayers()) do
+        if pl ~= kNqmJPeTg and pl.uqERhL and pl.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
+            local hAlkBITigo = pl.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk="))
+            if hAlkBITigo and hAlkBITigo.Health > 0 then
+                local hhagpBLvGn = pl.uqERhL.Head
+                local OcTcBKHSgF, onScreen = qGQxBvQJLgL:WorldToScreenPoint(hhagpBLvGn.Position)
+                if onScreen then
+                    local guljeetzPmc = (Vector2.new(OcTcBKHSgF.X, OcTcBKHSgF.Y) - Vector2.new(skjPYOnl, my)).Magnitude
+                    if guljeetzPmc < nAFmqty and guljeetzPmc <= radius then
+                        nAFmqty, bestPl = guljeetzPmc, pl
+                    end
+                end
+            end
+        end
+    end
+    return bestPl
+end
+
+
+local DzurruoTdD updateNoClip()
+    pcall(DzurruoTdD()
+        if wujpYbWfO and kNqmJPeTg.uqERhL then
+            for cgYydSD, part in pairs(kNqmJPeTg.uqERhL:GetDescendants()) do
+                if part:IsA(base64decode("QmFzZVBhcnQ=")) then part.CanCollide = false end
+            end
+            task.wait(0.05)
+        elseif kNqmJPeTg.uqERhL then
+            for cgYydSD, part in pairs(kNqmJPeTg.uqERhL:GetDescendants()) do
+                if part:IsA(base64decode("QmFzZVBhcnQ=")) then part.CanCollide = true end
+            end
+        end
+    end)
+end
+
+
+local DzurruoTdD updateFly()
+    pcall(DzurruoTdD()
+        if OVRyyPmY and kNqmJPeTg.uqERhL then
+            local TSRuKKlT = kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA=="))
+            if TSRuKKlT then
+                if not bSqKdsv then
+                    bSqKdsv = vXYACT.RenderStepped:Connect(DzurruoTdD()
+                        pcall(DzurruoTdD()
+                            if not OVRyyPmY or not kNqmJPeTg.uqERhL or not kNqmJPeTg.uqERhL:FindFirstChild(base64decode("SHVtYW5vaWRSb290UGFydA==")) then return end
+                            local xUieRhG = Vector3.new(0, 0, 0)
+                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.W) then xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.LookVector end
+                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.S) then xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.LookVector end
+                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.A) then xUieRhG = xUieRhG - qGQxBvQJLgL.CFrame.RightVector end
+                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.D) then xUieRhG = xUieRhG + qGQxBvQJLgL.CFrame.RightVector end
+                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.Space) then xUieRhG = xUieRhG + Vector3.new(0, 1, 0) end
+                            if IoeaaWlqUog:IsKeyDown(Enum.KeyCode.LeftControl) then xUieRhG = xUieRhG - Vector3.new(0, 1, 0) end
+                            if xUieRhG.Magnitude > 0 then TSRuKKlT.Velocity = xUieRhG.unit * LsXrtpb else TSRuKKlT.Velocity = Vector3.new(0, 0, 0) end
+                            TSRuKKlT.CFrame = CFrame.new(TSRuKKlT.Position, TSRuKKlT.Position + qGQxBvQJLgL.CFrame.LookVector)
+                            task.wait(0.05)
+                        end)
+                    end)
+                end
+                afPZXhtFnXI:ChangeState(Enum.HumanoidStateType.Physics)
+            end
+        else
+            if bSqKdsv then bSqKdsv:Disconnect() bSqKdsv = nil end
+            if kNqmJPeTg.uqERhL and kNqmJPeTg.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk=")) then afPZXhtFnXI:ChangeState(Enum.HumanoidStateType.Running) end
+        end
+    end)
+end
+
+
+local DzurruoTdD autoShoot()
+    pcall(DzurruoTdD()
+        if DWMUQYs and kNqmJPeTg.uqERhL then
+            local PXKulAt = getClosestTarget(HdXpffjnS)
+            if PXKulAt and PXKulAt.uqERhL and PXKulAt.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
+                local GElvzzlL = kNqmJPeTg.uqERhL:FindFirstChildOfClass(base64decode("VG9vbA=="))
+                if GElvzzlL then
+                    local XtkNGsXYaL = kNqmJPeTg:GetMouse()
+                    XtkNGsXYaL.Target = PXKulAt.uqERhL.Head
+                    XtkNGsXYaL.Hit = CFrame.new(PXKulAt.uqERhL.Head.Position)
+                    GElvzzlL:Activate()
+                    task.wait(0.1)
+                end
+            end
+        end
+    end)
+end
+
+
+for cgYydSD, player in ipairs(hriMBZWkfZ:GetPlayers()) do
+    if player ~= kNqmJPeTg then pcall(DzurruoTdD() setupSkeleton(player) end) end
+end
+
+
+local uNvDLLdeRqv, BoxESPIndicator = makeToggle(oyogeaDV, 10, base64decode("Qm94IEVTUA=="), DzurruoTdD(QpNEYp)
+    tgwZPjvctvJ = QpNEYp
+    updateBoxESP()
+end)
+
+local MllBiQJE, SkeletonESPIndicator = makeToggle(oyogeaDV, 60, base64decode("U2tlbGV0b24gRVNQ"), DzurruoTdD(QpNEYp)
+    wtNjFgu = QpNEYp
+    if not wtNjFgu then
+        for cgYydSD, playerSkeleton in pairs(iVBoLA) do
+            if playerSkeleton then
+                for cgYydSD, rspBNSQI in pairs(playerSkeleton.Lines) do
+                    rspBNSQI.Visible = false
+                end
+            end
+        end
+    end
+end)
+
+local IJSSSDjFMvl, AimbotIndicator = makeToggle(oyogeaDV, 110, base64decode("QWltYm90"), DzurruoTdD(QpNEYp)
+    cZzacYq = QpNEYp
+    MReBkC.Visible = cZzacYq
+    if cZzacYq then
+        DWMUQYs = false
+        bjJXMIPjcbb = false
+        RageBotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
+        SoftAimIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
+        IDGRykDGLmE.Visible = false
+    end
+end)
+
+local zYSjIKOvgU, RageBotIndicator = makeToggle(oyogeaDV, 160, base64decode("UmFnZSBCb3Q="), DzurruoTdD(QpNEYp)
+    DWMUQYs = QpNEYp
+    MReBkC.Visible = DWMUQYs
+    if DWMUQYs then
+        cZzacYq = false
+        bjJXMIPjcbb = false
+        AimbotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
+        SoftAimIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
+        IDGRykDGLmE.Visible = false
+        OVRyyPmY = true
+        FlyIndicator.BackgroundColor3 = Color3.fromRGB(200, 0, 255)
+        updateFly()
+    end
+end)
+
+local BbxBuQPi, SoftAimIndicator = makeToggle(oyogeaDV, 210, base64decode("U29mdCBBaW0="), DzurruoTdD(QpNEYp)
+    bjJXMIPjcbb = QpNEYp
+    IDGRykDGLmE.Visible = bjJXMIPjcbb
+    if bjJXMIPjcbb then
+        cZzacYq = false
+        DWMUQYs = false
+        AimbotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
+        RageBotIndicator.BackgroundColor3 = Color3.fromRGB(60, 0, 80)
+        MReBkC.Visible = false
+    end
+end)
+
+local gbMeDKS, NoClipIndicator = makeToggle(oyogeaDV, 260, base64decode("Tm9DbGlw"), DzurruoTdD(QpNEYp)
+    wujpYbWfO = QpNEYp
+    updateNoClip()
+end)
+
+local UzeUkD, FlyIndicator = makeToggle(oyogeaDV, 310, base64decode("Rmx5"), DzurruoTdD(QpNEYp)
+    OVRyyPmY = QpNEYp
+    updateFly()
+end)
+
+local ntsAgUj, ThirdPersonIndicator = makeToggle(oyogeaDV, 360, base64decode("VGhpcmQgUGVyc29u"), DzurruoTdD(QpNEYp)
+    uSHyCqQ = QpNEYp
+    updateThirdPerson()
+end)
+
+local NkqRvbOPXn, DashIndicator
+local IxmOFXRGBHQ
+local rykobxocw
+
+local DzurruoTdD updateCanvasSize()
+    if YvzIcPBU then
+        oyogeaDV.CanvasSize = UDim2.new(0, 0, 0, 810)
+    else
+        oyogeaDV.CanvasSize = UDim2.new(0, 0, 0, 750)
+    end
+end
+
+NkqRvbOPXn, DashIndicator = makeToggle(oyogeaDV, 410, base64decode("RGFzaA=="), DzurruoTdD(QpNEYp)
+    YvzIcPBU = QpNEYp
+    IxmOFXRGBHQ.Visible = YvzIcPBU
+    updateCanvasSize()
+end)
+
+IxmOFXRGBHQ = makeSlider(oyogeaDV, 460, base64decode("RGFzaCBTcGVlZA=="), 20, 100, OyXufEZ, DzurruoTdD(xdLgOql)
+    OyXufEZ = xdLgOql
+end)
+IxmOFXRGBHQ.Visible = false
+
+rykobxocw = makeSlider(oyogeaDV, YvzIcPBU and 530 or 470, base64decode("QWltYm90IEZPVg=="), 50, 500, HdXpffjnS, DzurruoTdD(xdLgOql)
+    HdXpffjnS = xdLgOql
+    MReBkC.Radius = xdLgOql
+end)
+
+local qZTnTxgfJgH = makeSlider(oyogeaDV, YvzIcPBU and 590 or 530, base64decode("Rmx5IFNwZWVk"), 50, 200, LsXrtpb, DzurruoTdD(xdLgOql)
+    LsXrtpb = xdLgOql
+end)
+
+
+local UPbFNDo, DestroyIndicator = makeToggle(oyogeaDV, YvzIcPBU and 650 or 590, base64decode("RGVzdHJveSBNZW51"), DzurruoTdD()
+    kxDKPgEv:Destroy()
+end)
+UPbFNDo.TextColor3 = Color3.new(1, 0, 0) 
+
+
+table.insert(AiiRdrz, IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+    if processed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        KowcEvps = true
+        TQckCt = getClosestTarget(bjJXMIPjcbb and EdPbzfb or HdXpffjnS)
+    end
+end))
+
+table.insert(AiiRdrz, IoeaaWlqUog.InputEnded:Connect(DzurruoTdD(input, processed)
+    if processed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        KowcEvps = false
+        TQckCt = nil
+    end
+end))
+
+
+IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.LeftShift then
+        performDash()
+    end
+end)
+
+
+IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.Tab then
+        pcall(DzurruoTdD()
+            pzrAUafj:Play()
+            uvLgjiQf = not uvLgjiQf
+            IoeaaWlqUog.MouseBehavior = uvLgjiQf and Enum.MouseBehavior.LockCenter or Enum.MouseBehavior.Default
+        end)
+    end
+end)
+
+
+local HeWFYsk = vXYACT.RenderStepped:Connect(DzurruoTdD()
+    pcall(DzurruoTdD()
+        if not qGQxBvQJLgL then return end
+        local skjPYOnl, my = IoeaaWlqUog:GetMouseLocation().X, IoeaaWlqUog:GetMouseLocation().Y
+        MReBkC.Position = Vector2.new(skjPYOnl, my)
+        IDGRykDGLmE.Position = Vector2.new(skjPYOnl, my)
+        MReBkC.Visible = cZzacYq or DWMUQYs
+        IDGRykDGLmE.Visible = bjJXMIPjcbb
+
+        if KowcEvps and (cZzacYq or DWMUQYs or bjJXMIPjcbb) then
+            local PXKulAt = TQckCt or getClosestTarget(bjJXMIPjcbb and EdPbzfb or HdXpffjnS)
+            if PXKulAt and PXKulAt.uqERhL then
+                local hhagpBLvGn = PXKulAt.uqERhL:FindFirstChild(base64decode("SGVhZA=="))
+                if hhagpBLvGn then
+                    if DWMUQYs then
+                        qGQxBvQJLgL.CFrame = CFrame.new(qGQxBvQJLgL.CFrame.Position, hhagpBLvGn.Position)
+                    elseif cZzacYq then
+                        local NsJlxKhmUr = qGQxBvQJLgL.CFrame.LookVector
+                        local tzvYKX = (hhagpBLvGn.Position - qGQxBvQJLgL.CFrame.Position).Unit
+                        local EunwJK = NsJlxKhmUr:Lerp(tzvYKX, 0.5)
+                        qGQxBvQJLgL.CFrame = CFrame.new(qGQxBvQJLgL.CFrame.Position, qGQxBvQJLgL.CFrame.Position + EunwJK)
+                    elseif bjJXMIPjcbb then
+                        local NsJlxKhmUr = qGQxBvQJLgL.CFrame.LookVector
+                        local tzvYKX = (hhagpBLvGn.Position - qGQxBvQJLgL.CFrame.Position).Unit
+                        local EunwJK = NsJlxKhmUr:Lerp(tzvYKX, 0.2)
+                        qGQxBvQJLgL.CFrame = CFrame.new(qGQxBvQJLgL.CFrame.Position, qGQxBvQJLgL.CFrame.Position + EunwJK)
+                    end
+                end
+            end
+        end
+
+        if wtNjFgu then
+            for player, data in pairs(iVBoLA) do
+                if data.uqERhL and data.uqERhL:FindFirstChild(base64decode("SGVhZA==")) then
+                    local hAlkBITigo = data.uqERhL:FindFirstChild(base64decode("YWZQWlhodEZuWEk="))
+                    if hAlkBITigo and hAlkBITigo.Health > 0 then
+                        local hhagpBLvGn = data.uqERhL.Head
+                        local cgYydSD, headOnScreen = qGQxBvQJLgL:WorldToViewportPoint(hhagpBLvGn.Position)
+                        if headOnScreen then
+                            local wLxsHavz = (data.RigType == Enum.HumanoidRigType.R6) and wnHphNi or PgjwOGVn
+                            for i, parts in ipairs(wLxsHavz) do
+                                local hplcopBmtr = data.uqERhL:FindFirstChild(parts[1])
+                                local wvSjHOKw = data.uqERhL:FindFirstChild(parts[2])
+                                local rspBNSQI = data.Lines[i]
+                                if hplcopBmtr and wvSjHOKw then
+                                    local VOmgmHXO, onScreen0 = qGQxBvQJLgL:WorldToViewportPoint(hplcopBmtr.Position)
+                                    local zrIYxpvVkF, onScreen1 = qGQxBvQJLgL:WorldToViewportPoint(wvSjHOKw.Position)
+                                    if onScreen0 and onScreen1 then
+                                        rspBNSQI.From = Vector2.new(VOmgmHXO.X, VOmgmHXO.Y)
+                                        rspBNSQI.To = Vector2.new(zrIYxpvVkF.X, zrIYxpvVkF.Y)
+                                        rspBNSQI.Visible = true
+                                    else
+                                        rspBNSQI.Visible = false
+                                    end
+                                else
+                                    rspBNSQI.Visible = false
+                                end
+                            end
+                        else
+                            for cgYydSD, rspBNSQI in pairs(data.Lines) do
+                                rspBNSQI.Visible = false
+                            end
+                        end
+                    else
+                        for cgYydSD, rspBNSQI in pairs(data.Lines) do
+                            rspBNSQI.Visible = false
+                        end
+                    end
+                else
+                    for cgYydSD, rspBNSQI in pairs(data.Lines) do
+                        rspBNSQI.Visible = false
+                    end
+                end
+            end
+        else
+            for cgYydSD, playerSkeleton in pairs(iVBoLA) do
+                if playerSkeleton then
+                    for cgYydSD, rspBNSQI in pairs(playerSkeleton.Lines) do
+                        rspBNSQI.Visible = false
+                    end
+                end
+            end
+        end
+
+        updateNoClip()
+        updateFly()
+        autoShoot()
+        updateBoxESP()
+        updateThirdPerson()
+    end)
+end)
+
+
+local ChgeGn = hriMBZWkfZ.PlayerAdded:Connect(DzurruoTdD(player)
+    if player ~= kNqmJPeTg then pcall(DzurruoTdD() setupSkeleton(player) end) end
+end)
+
+local iuNyLnlSt = hriMBZWkfZ.PlayerRemoving:Connect(DzurruoTdD(player)
+    pcall(DzurruoTdD()
+        clearSkeleton(player)
+        if CEACBgea[player] then
+            local iRyTRlqDJEh = CEACBgea[player]
+            if iRyTRlqDJEh and iRyTRlqDJEh.Parent then iRyTRlqDJEh:Destroy() end
+            CEACBgea[player] = nil
+        end
+    end)
+end)
+
+
+kNqmJPeTg.CharacterAdded:Connect(DzurruoTdD(character)
+    pcall(DzurruoTdD()
+        uqERhL = character
+        afPZXhtFnXI = character:WaitForChild(base64decode("YWZQWlhodEZuWEk="), 5)
+        updateNoClip()
+        updateFly()
+        updateThirdPerson()
+    end)
+end)
+
+
+IoeaaWlqUog.InputBegan:Connect(DzurruoTdD(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.G then
+        pcall(DzurruoTdD()
+            pzrAUafj:Play()
+            kxDKPgEv.Enabled = not kxDKPgEv.Enabled
+        end)
+    end
+end)
+
+
+kxDKPgEv.Destroying:Connect(DzurruoTdD()
+    pcall(DzurruoTdD()
+        if ChgeGn then ChgeGn:Disconnect() end
+        if iuNyLnlSt then iuNyLnlSt:Disconnect() end
+        if HeWFYsk then HeWFYsk:Disconnect() end
+        if bSqKdsv then bSqKdsv:Disconnect() end
+        if BZZFFfaDpAX then BZZFFfaDpAX:Disconnect() end
+        for cgYydSD, connection in ipairs(AiiRdrz) do connection:Disconnect() end
+        for cgYydSD, iRyTRlqDJEh in pairs(CEACBgea) do if iRyTRlqDJEh and iRyTRlqDJEh.Parent then iRyTRlqDJEh:Destroy() end end
+        for cgYydSD, playerSkeleton in pairs(iVBoLA) do
+            if playerSkeleton then
+                for cgYydSD, rspBNSQI in pairs(playerSkeleton.Lines) do
+                    rspBNSQI.Visible = false
+                    rspBNSQI:Remove()
+                end
+            end
+        end
+        if MReBkC then MReBkC:Remove() end
+        if IDGRykDGLmE then IDGRykDGLmE:Remove() end
+        if cwhtZIR then cwhtZIR:Destroy() end
+    end)
+end)
+
+
+print(base64decode("Uml2YWxzIEVTUCBTY3JpcHQgTG9hZGVkIFN1Y2Nlc3NmdWxseQ=="))
+updateCanvasSize()
