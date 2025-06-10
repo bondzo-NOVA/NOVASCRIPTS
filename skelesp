@@ -23,25 +23,63 @@ local function createLine()
     return line
 end
 
--- Function to get hand and feet connections (torso to hands and feet)
-local function getLimbConnections(character)
+-- Function to get full skeleton connections
+local function getSkeletonConnections(character)
+    local bones = {}
+    local head = character:FindFirstChild("Head")
     local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+    local lowerTorso = character:FindFirstChild("LowerTorso")
+    local leftUpperArm = character:FindFirstChild("Left Arm") or character:FindFirstChild("LeftUpperArm")
+    local rightUpperArm = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightUpperArm")
+    local leftLowerArm = character:FindFirstChild("LeftLowerArm")
+    local rightLowerArm = character:FindFirstChild("RightLowerArm")
     local leftHand = character:FindFirstChild("Left Arm") or character:FindFirstChild("LeftHand")
     local rightHand = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightHand")
+    local leftUpperLeg = character:FindFirstChild("Left Leg") or character:FindFirstChild("LeftUpperLeg")
+    local rightUpperLeg = character:FindFirstChild("Right Leg") or character:FindFirstChild("RightUpperLeg")
+    local leftLowerLeg = character:FindFirstChild("LeftLowerLeg")
+    local rightLowerLeg = character:FindFirstChild("RightLowerLeg")
     local leftFoot = character:FindFirstChild("Left Leg") or character:FindFirstChild("LeftFoot")
     local rightFoot = character:FindFirstChild("Right Leg") or character:FindFirstChild("RightFoot")
-    local bones = {}
-    if torso and leftHand then
-        table.insert(bones, {torso, leftHand})
+
+    if torso and head then
+        table.insert(bones, {torso, head})
     end
-    if torso and rightHand then
-        table.insert(bones, {torso, rightHand})
+    if torso and leftUpperArm then
+        table.insert(bones, {torso, leftUpperArm})
     end
-    if torso and leftFoot then
-        table.insert(bones, {torso, leftFoot})
+    if leftUpperArm and leftLowerArm then
+        table.insert(bones, {leftUpperArm, leftLowerArm})
     end
-    if torso and rightFoot then
-        table.insert(bones, {torso, rightFoot})
+    if leftLowerArm and leftHand then
+        table.insert(bones, {leftLowerArm, leftHand})
+    end
+    if torso and rightUpperArm then
+        table.insert(bones, {torso, rightUpperArm})
+    end
+    if rightUpperArm and rightLowerArm then
+        table.insert(bones, {rightUpperArm, rightLowerArm})
+    end
+    if rightLowerArm and rightHand then
+        table.insert(bones, {rightLowerArm, rightHand})
+    end
+    if lowerTorso and leftUpperLeg then
+        table.insert(bones, {lowerTorso or torso, leftUpperLeg})
+    end
+    if leftUpperLeg and leftLowerLeg then
+        table.insert(bones, {leftUpperLeg, leftLowerLeg})
+    end
+    if leftLowerLeg and leftFoot then
+        table.insert(bones, {leftLowerLeg, leftFoot})
+    end
+    if lowerTorso and rightUpperLeg then
+        table.insert(bones, {lowerTorso or torso, rightUpperLeg})
+    end
+    if rightUpperLeg and rightLowerLeg then
+        table.insert(bones, {rightUpperLeg, rightLowerLeg})
+    end
+    if rightLowerLeg and rightFoot then
+        table.insert(bones, {rightLowerLeg, rightFoot})
     end
     return bones
 end
@@ -61,7 +99,7 @@ local function updatePlayerESP(player)
     end
 
     boneLines[player] = {Lines = {}, Character = character}
-    local bones = getLimbConnections(character)
+    local bones = getSkeletonConnections(character)
     for _ = 1, #bones do
         table.insert(boneLines[player].Lines, createLine())
     end
@@ -77,7 +115,7 @@ local function updateLines()
                 return
             end
 
-            local bones = getLimbConnections(character)
+            local bones = getSkeletonConnections(character)
             for i, line in ipairs(data.Lines) do
                 if i > #bones then
                     line.Visible = false
