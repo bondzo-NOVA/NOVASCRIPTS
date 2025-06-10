@@ -23,17 +23,25 @@ local function createLine()
     return line
 end
 
--- Function to get hand connections (torso to hands)
-local function getHandConnections(character)
+-- Function to get hand and feet connections (torso to hands and feet)
+local function getLimbConnections(character)
     local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
     local leftHand = character:FindFirstChild("Left Arm") or character:FindFirstChild("LeftHand")
     local rightHand = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightHand")
+    local leftFoot = character:FindFirstChild("Left Leg") or character:FindFirstChild("LeftFoot")
+    local rightFoot = character:FindFirstChild("Right Leg") or character:FindFirstChild("RightFoot")
     local bones = {}
     if torso and leftHand then
         table.insert(bones, {torso, leftHand})
     end
     if torso and rightHand then
         table.insert(bones, {torso, rightHand})
+    end
+    if torso and leftFoot then
+        table.insert(bones, {torso, leftFoot})
+    end
+    if torso and rightFoot then
+        table.insert(bones, {torso, rightFoot})
     end
     return bones
 end
@@ -53,7 +61,7 @@ local function updatePlayerESP(player)
     end
 
     boneLines[player] = {Lines = {}, Character = character}
-    local bones = getHandConnections(character)
+    local bones = getLimbConnections(character)
     for _ = 1, #bones do
         table.insert(boneLines[player].Lines, createLine())
     end
@@ -69,7 +77,7 @@ local function updateLines()
                 return
             end
 
-            local bones = getHandConnections(character)
+            local bones = getLimbConnections(character)
             for i, line in ipairs(data.Lines) do
                 if i > #bones then
                     line.Visible = false
