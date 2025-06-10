@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Player = Players.LocalPlayer
@@ -9,6 +10,9 @@ local camera = Workspace.CurrentCamera
 local function logError(err)
     warn("Bone ESP Script Error: " .. tostring(err))
 end
+
+-- Toggle state
+local espEnabled = true
 
 -- Table to store lines for each player's bones
 local boneLines = {}
@@ -27,8 +31,9 @@ end
 local function getSkeletonConnections(character)
     local bones = {}
     local head = character:FindFirstChild("Head")
-    local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+    local upperTorso = character:FindFirstChild("UpperTorso")
     local lowerTorso = character:FindFirstChild("LowerTorso")
+    local torso = character:FindFirstChild("Torso") or upperTorso
     local leftUpperArm = character:FindFirstChild("Left Arm") or character:FindFirstChild("LeftUpperArm")
     local rightUpperArm = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightUpperArm")
     local leftLowerArm = character:FindFirstChild("LeftLowerArm")
@@ -44,6 +49,9 @@ local function getSkeletonConnections(character)
 
     if torso and head then
         table.insert(bones, {torso, head})
+    end
+    if upperTorso and lowerTorso then -- Spine for R15
+        table.insert(bones, {upperTorso, lowerTorso})
     end
     if torso and leftUpperArm then
         table.insert(bones, {torso, leftUpperArm})
@@ -107,36 +115,47 @@ end
 
 -- Function to update all lines
 local function updateLines()
-    pcall(function()
-        for player, data in pairs(boneLines) do
-            local character = player.Character
-            if not character or not character:FindFirstChild("Humanoid") or character.Humanoid.Health <= 0 then
-                updatePlayerESP(player)
-                return
+    if not espEnabled then
+        for _, data in pairs(boneLines) do
+            for _, line in pairs(data.Lines) do
+                line.Visible = false
             end
+        end
+        return
+    end
 
-            local bones = getSkeletonConnections(character)
-            for i, line in ipairs(data.Lines) do
-                if i > #bones then
-                    line.Visible = false
-                    continue
+    task.spawn(function()
+        pcall(function()
+            for player, data in pairs(boneLines) do
+                local character = player.Character
+                if not character or not character:FindFirstChild("Humanoid") or character.Humanoid.Health <= 0 then
+                    updatePlayerESP(player)
+                    return
                 end
-                local part0, part1 = bones[i][1], bones[i][2]
-                if part0 and part1 then
-                    local pos0, onScreen0 = camera:WorldToViewportPoint(part0.Position)
-                    local pos1, onScreen1 = camera:WorldToViewportPoint(part1.Position)
-                    if onScreen0 and onScreen1 then
-                        line.From = Vector2.new(pos0.X, pos0.Y)
-                        line.To = Vector2.new(pos1.X, pos1.Y)
-                        line.Visible = true
+
+                local bones = getSkeletonConnections(character)
+                for i, line in ipairs(data.Lines) do
+                    if i > #bones then
+                        line.Visible = false
+                        continue
+                    end
+                    local part0, part1 = bones[i][1], bones[i][2]
+                    if part0 and part1 then
+                        local pos0, onScreen0 = camera:WorldToViewportPoint(part0.Position)
+                        local pos1, onScreen1 = camera:WorldToViewportPoint(part1.Position)
+                        if onScreen0 and onScreen1 then
+                            line.From = Vector2.new(pos0.X, pos0.Y)
+                            line.To = Vector2.new(pos1.X, pos1.Y)
+                            line.Visible = true
+                        else
+                            line.Visible = false
+                        end
                     else
                         line.Visible = false
                     end
-                else
-                    line.Visible = false
                 end
             end
-        end
+        end)
     end)
 end
 
@@ -174,6 +193,16 @@ for _, player in ipairs(Players:GetPlayers()) do
         end)
     end
 end
+
+-- Toggle ESP with 'G' key
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.G then
+        espEnabled = not espEnabled
+        updateLines()
+        print("ESP " .. (espEnabled and "Enabled" or "Disabled"))
+    end
+end)
 
 -- Render loop
 local renderSteppedConnection = RunService.RenderStepped:Connect(updateLines)
