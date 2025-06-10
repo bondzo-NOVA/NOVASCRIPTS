@@ -1,27 +1,102 @@
-if skeletonEspEnabled then
-    for player, data in pairs(Skeletons) do
-        if data.Character and data.Character:FindFirstChild("Head") then
-            local h = data.Character:FindFirstChild("Humanoid")
-            if h and h.Health > 0 then
-                local head = data.Character.Head
-                local _, headOnScreen = camera:WorldToViewportPoint(head.Position)
-                if headOnScreen then
-                    local connections = (data.RigType == Enum.HumanoidRigType.R6) and R6Connections or R15Connections
-                    for i, parts in ipairs(connections) do
-                        local part0 = data.Character:FindFirstChild(parts[1])
-                        local part1 = data.Character:FindFirstChild(parts[2])
-                        local line = data.Lines[i]
-                        if part0 and part1 then
-                            local pos0, onScreen0 = camera:WorldToViewportPoint(part0.Position)
-                            local pos1, onScreen1 = camera:WorldToViewportPoint(part1.Position)
-                            if onScreen0 and onScreen1 then
-                                line.From = Vector2.new(pos0.X, pos0.Y)
-                                line.To = Vector2.new(pos1.X, pos1.Y)
-                                line.Visible = true
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local camera = workspace.CurrentCamera
+
+-- Initialize variables
+local skeletonEspEnabled = true -- Start with ESP enabled for testing
+local Skeletons = {}
+local R6Connections = {
+    {"Head", "Torso"},
+    {"Torso", "Left Arm"},
+    {"Torso", "Right Arm"},
+    {"Torso", "Left Leg"},
+    {"Torso", "Right Leg"}
+}
+local R15Connections = {
+    {"Head", "UpperTorso"},
+    {"UpperTorso", "LowerTorso"},
+    {"LowerTorso", "LeftUpperLeg"},
+    {"LowerTorso", "RightUpperLeg"},
+    {"UpperTorso", "LeftUpperArm"},
+    {"UpperTorso", "RightUpperArm"}
+}
+
+-- Function to set up skeleton data for a player
+local function setupSkeleton(player)
+    if player.Character then
+        local humanoid = player.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            Skeletons[player] = {
+                Character = player.Character,
+                Lines = {},
+                RigType = humanoid.RigType
+            }
+            local connections = (Skeletons[player].RigType == Enum.HumanoidRigType.R6) and R6Connections or R15Connections
+            for _, parts in ipairs(connections) do
+                local line = Drawing.new("Line")
+                line.Color = Color3.fromRGB(255, 255, 255) -- White lines
+                line.Thickness = 2
+                line.Visible = false
+                table.insert(Skeletons[player].Lines, line)
+            end
+        end
+    end
+end
+
+-- Initialize skeletons for all players
+for _, player in pairs(Players:GetPlayers()) do
+    setupSkeleton(player)
+end
+
+-- Handle new players
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        setupSkeleton(player)
+    end)
+end)
+
+-- Handle player leaving
+Players.PlayerRemoving:Connect(function(player)
+    if Skeletons[player] then
+        for _, line in pairs(Skeletons[player].Lines) do
+            line:Remove() -- Clean up Drawing objects
+        end
+        Skeletons[player] = nil
+    end
+end)
+
+-- Skeleton ESP rendering loop
+RunService.RenderStepped:Connect(function()
+    if skeletonEspEnabled then
+        for player, data in pairs(Skeletons) do
+            if data.Character and data.Character:FindFirstChild("Head") then
+                local h = data.Character:FindFirstChild("Humanoid")
+                if h and h.Health > 0 then
+                    local head = data.Character.Head
+                    local _, headOnScreen = camera:WorldToViewportPoint(head.Position)
+                    if headOnScreen then
+                        local connections = (data.RigType == Enum.HumanoidRigType.R6) and R6Connections or R15Connections
+                        for i, parts in ipairs(connections) do
+                            local part0 = data.Character:FindFirstChild(parts[1])
+                            local part1 = data.Character:FindFirstChild(parts[2])
+                            local line = data.Lines[i]
+                            if part0 and part1 then
+                                local pos0, onScreen0 = camera:WorldToViewportPoint(part0.Position)
+                                local pos1, onScreen1 = camera:WorldToViewportPoint(part1.Position)
+                                if onScreen0 and onScreen1 then
+                                    line.From = Vector2.new(pos0.X, pos0.Y)
+                                    line.To = Vector2.new(pos1.X, pos1.Y)
+                                    line.Visible = true
+                                else
+                                    line.Visible = false
+                                end
                             else
                                 line.Visible = false
                             end
-                        else
+                        end
+                    else
+                        for _, line in pairs(data.Lines) do
                             line.Visible = false
                         end
                     end
@@ -35,18 +110,22 @@ if skeletonEspEnabled then
                     line.Visible = false
                 end
             end
-        else
-            for _, line in pairs(data.Lines) do
-                line.Visible = false
+        end
+    else
+        for _, playerSkeleton in pairs(Skeletons) do
+            if playerSkeleton then
+                for _, line in pairs(playerSkeleton.Lines) do
+                    line.Visible = false
+                end
             end
         end
     end
-else
-    for _, playerSkeleton in pairs(Skeletons) do
-        if playerSkeleton then
-            for _, line in pairs(playerSkeleton.Lines) do
-                line.Visible = false
-            end
-        end
+end)
+
+-- Simple keybind to toggle ESP for testing (e.g., press 'E' to toggle)
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent and input.KeyCode == Enum.KeyCode.E then
+        skeletonEspEnabled = not skeletonEspEnabled
+        print("ESP " .. (skeletonEspEnabled and "Enabled" or "Disabled"))
     end
-end
+end)
