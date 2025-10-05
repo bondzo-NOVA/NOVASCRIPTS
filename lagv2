@@ -1,0 +1,17 @@
+local Workspace = game:GetService("Workspace")
+for i = 1, 1000 do
+    for j = 1, 100 do
+        warn("Spawning block #" .. ((i - 1) * 100 + j))
+        local block = Instance.new("Part")
+        block.Size = Vector3.new(5, 5, 5)
+        block.Position = Vector3.new(math.random(-1000, 1000), math.random(50, 1000), math.random(-1000, 1000))
+        block.Anchored = false
+        block.Parent = Workspace
+    end
+    wait(0.05)
+    for j = 1, 10000 do
+        warn("Warning message #" .. ((i - 1) * 10000 + j))
+    end
+    wait(0.01)
+end
+print("Spawned 100,000 blocks and 100,000 warnings")
