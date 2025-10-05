@@ -1,0 +1,6 @@
+for i = 1, 1000 do
+    for j = 1, 10000000 do
+        warn("Warning message #" .. ((i - 1) * 10000000 + j))
+    end
+    wait(0.01)
+end
