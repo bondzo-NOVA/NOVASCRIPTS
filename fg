@@ -1,0 +1,897 @@
+--// Rivals ESP + Cheats GUI – Low Contrast / Square / White Text Theme
+--// Box & Skeleton ESP thru walls | Hard + Soft Aimbot | TriggerBot | Fly | NoClip
+--// Insert = mouse lock toggle | Hold RMB to aim
+--// Added: Tracers, Spin Bot, Purple Glow on load for all, Purple Fog & Sky tint
+--// Added: Shaders (post-processing effects like Bloom, ColorCorrection for purple tint, etc.)
+--// Added: Toggle for Fog, Toggle for 3rd Person
+--// Fixes: Removed invalid FogEnabled, changed sound ID to valid button click, moved FPSLabel to PlayerGui
+--// Adjustment: Reduced blue in shaders by balancing TintColor to (200,150,180)
+--// Fixes for errors: Changed sound ID to 6655851046, added checks for atm in toggleFog
+--// Spinbot fix: Use BodyGyro for spinning
+--// 3rd person fix: Implemented mouse-controlled orbiting camera to avoid spin issues
+--// Shaders fix: Removed DepthOfField to reduce blurriness
+--// Improvements: Enhanced shaders with better bloom, added slight blur, stronger purple tint
+--// Added: Bunny Hop toggle
+--// Added: Spin Bot speed slider
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local Lighting = game:GetService("Lighting")
+local Player = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+local Character, Humanoid
+local function onCharacterAdded(char)
+    Character = char
+    Humanoid = char:WaitForChild("Humanoid", 8)
+end
+Player.CharacterAdded:Connect(onCharacterAdded)
+if Player.Character then onCharacterAdded(Player.Character) end
+-- ──── Accurate FPS Counter (improved visibility) ───────────────────────────────────────────────
+local FPSLabel = Instance.new("TextLabel")
+FPSLabel.Parent = Player:WaitForChild("PlayerGui") -- Changed to PlayerGui to avoid CoreGui issues
+FPSLabel.Size = UDim2.new(0, 94, 0, 26)
+FPSLabel.Position = UDim2.new(1, -104, 0, 8)
+FPSLabel.BackgroundTransparency = 0.75
+FPSLabel.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+FPSLabel.TextColor3 = Color3.new(1,1,1)
+FPSLabel.Font = Enum.Font.GothamSemibold
+FPSLabel.TextSize = 14
+FPSLabel.Text = "FPS: --"
+FPSLabel.TextXAlignment = Enum.TextXAlignment.Right
+FPSLabel.ZIndex = 1000000
+FPSLabel.Visible = true
+Instance.new("UICorner", FPSLabel).CornerRadius = UDim.new(0, 5)
+local fpsStroke = Instance.new("UIStroke", FPSLabel)
+fpsStroke.Color = Color3.fromRGB(110, 90, 160)
+fpsStroke.Thickness = 1
+fpsStroke.Transparency = 0.4
+-- Simple delta fallback + original sampling
+local lastTime, frameCount = tick(), 0
+local fpsSamples = {}
+RunService.RenderStepped:Connect(function(delta)
+    frameCount += 1
+    local now = tick()
+   
+    -- Fallback counter (very reliable)
+    if now - lastTime >= 1 then
+        FPSLabel.Text = "FPS: " .. math.floor(frameCount / (now - lastTime) + 0.5)
+        frameCount = 0
+        lastTime = now
+    end
+   
+    -- Original sampling (backup)
+    table.insert(fpsSamples, now)
+    while fpsSamples[1] and fpsSamples[1] < now - 1 do
+        table.remove(fpsSamples, 1)
+    end
+    local count = #fpsSamples
+    if count >= 2 then
+        FPSLabel.Text = "FPS: " .. math.floor(count / (now - fpsSamples[1]) + 0.5)
+    end
+end)
+-- ──── GUI Setup ────────────────────────────────────────────────────────────
+local EspGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
+EspGui.Name = "RivalsCheatsUI"
+EspGui.ResetOnSpawn = false
+EspGui.IgnoreGuiInset = true
+EspGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+EspGui.DisplayOrder = 999999
+local EspFrame = Instance.new("Frame", EspGui)
+EspFrame.Size = UDim2.new(0, 216, 0, 450)
+EspFrame.Position = UDim2.new(0, 12, 0, 12)
+EspFrame.BackgroundColor3 = Color3.fromRGB(22, 20, 34)
+EspFrame.BackgroundTransparency = 0.18
+EspFrame.ZIndex = 2000000
+Instance.new("UICorner", EspFrame).CornerRadius = UDim.new(0, 6)
+local frameStroke = Instance.new("UIStroke", EspFrame)
+frameStroke.Color = Color3.fromRGB(130, 110, 180)
+frameStroke.Thickness = 1.4
+frameStroke.Transparency = 0.45
+local TitleBar = Instance.new("Frame", EspFrame)
+TitleBar.Size = UDim2.new(1, 0, 0, 34)
+TitleBar.BackgroundColor3 = Color3.fromRGB(34, 30, 50)
+TitleBar.ZIndex = 2000001
+Instance.new("UICorner", TitleBar).CornerRadius = UDim.new(0, 6)
+local TitleText = Instance.new("TextLabel", TitleBar)
+TitleText.Size = UDim2.new(1, -50, 1, 0)
+TitleText.BackgroundTransparency = 1
+TitleText.Text = "pandas panel"
+TitleText.TextColor3 = Color3.new(1,1,1)
+TitleText.Font = Enum.Font.GothamBold
+TitleText.TextSize = 15
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.Position = UDim2.new(0,12,0,0)
+local MinimizeBtn = Instance.new("TextButton", TitleBar)
+MinimizeBtn.Size = UDim2.new(0, 32, 1, 0)
+MinimizeBtn.Position = UDim2.new(1, -38, 0, 0)
+MinimizeBtn.BackgroundTransparency = 1
+MinimizeBtn.Text = "_"
+MinimizeBtn.TextColor3 = Color3.new(1,1,1)
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.TextSize = 18
+local Scrolling = Instance.new("ScrollingFrame", EspFrame)
+Scrolling.Size = UDim2.new(1, -20, 1, -52)
+Scrolling.Position = UDim2.new(0, 10, 0, 40)
+Scrolling.BackgroundTransparency = 1
+Scrolling.ScrollBarThickness = 4
+Scrolling.ScrollBarImageColor3 = Color3.fromRGB(140, 120, 190)
+Scrolling.CanvasSize = UDim2.new(0,0,0,0)
+Scrolling.ZIndex = 2000001
+-- Draggable
+local dragging, dragStart, startPos = false, nil, nil
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = EspFrame.Position
+    end
+end)
+TitleBar.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        EspFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+TitleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+end)
+local ClickSound = Instance.new("Sound", EspGui)
+ClickSound.SoundId = "rbxassetid://6655851046" -- Valid button sound effect ID
+ClickSound.Volume = 0.55
+-- ──── Variables ────────────────────────────────────────────────────────────
+local boxEspEnabled = false
+local skeletonEspEnabled = false
+local tracersEnabled = false
+local flyEnabled = false
+local noClipEnabled = false
+local aimbotEnabled = false
+local softAimbotEnabled = false
+local triggerbotEnabled = false
+local spinbotEnabled = false
+local bunnyHopEnabled = false
+local glowEnabled = true -- On by default
+local shadersEnabled = false
+local fogEnabled = true -- On by default
+local thirdPersonEnabled= false
+local mouseUnlocked = false
+local flySpeed = 65
+local hardAimFov = 180
+local softAimFov = 240
+local softSmoothing = 0.11
+local spinSpeed = 10
+local isMinimized = false
+local holdingAim = false
+local espBoxes = {}
+local skeletons = {}
+local tracers = {}
+local highlights = {}
+local flyBV, flyConn, noclipConn, spinConn, thirdPersonConn, inputConn, bodyGyro, bunnyConn
+-- Improved Shaders (enhanced bloom, stronger purple tint, added slight blur)
+local bloomEffect = Instance.new("BloomEffect")
+bloomEffect.Parent = Lighting
+bloomEffect.Intensity = 0.6 -- Increased intensity
+bloomEffect.Threshold = 1.0 -- Lower threshold for more bloom
+bloomEffect.Size = 32 -- Larger size
+bloomEffect.Enabled = false
+
+local colorCorrection = Instance.new("ColorCorrectionEffect")
+colorCorrection.Parent = Lighting
+colorCorrection.TintColor = Color3.fromRGB(180, 120, 200) -- Stronger purple tint (more red/magenta)
+colorCorrection.Brightness = 0.08 -- Slight increase
+colorCorrection.Contrast = 0.15 -- Increased contrast
+colorCorrection.Saturation = 0.3 -- Increased saturation
+colorCorrection.Enabled = false
+
+local sunRays = Instance.new("SunRaysEffect")
+sunRays.Parent = Lighting
+sunRays.Intensity = 0.2 -- Increased
+sunRays.Spread = 0.9 -- Wider spread
+sunRays.Enabled = false
+
+local blurEffect = Instance.new("BlurEffect")
+blurEffect.Parent = Lighting
+blurEffect.Size = 4 -- Slight blur for better shader feel without heavy blurriness
+blurEffect.Enabled = false
+-- FOV Circles
+local hardFovCircle = Drawing.new("Circle")
+hardFovCircle.Visible = false
+hardFovCircle.Radius = hardAimFov
+hardFovCircle.Color = Color3.fromRGB(190, 140, 255)
+hardFovCircle.Thickness = 1.5
+hardFovCircle.Transparency = 0.75
+hardFovCircle.Filled = false
+local softFovCircle = Drawing.new("Circle")
+softFovCircle.Visible = false
+softFovCircle.Radius = softAimFov
+softFovCircle.Color = Color3.fromRGB(130, 220, 190)
+softFovCircle.Thickness = 1.3
+softFovCircle.Transparency = 0.7
+softFovCircle.Filled = false
+-- ──── Input ────────────────────────────────────────────────────────────────
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.Insert then
+        mouseUnlocked = not mouseUnlocked
+        UserInputService.MouseBehavior = mouseUnlocked and Enum.MouseBehavior.Default or Enum.MouseBehavior.LockCenter
+    end
+end)
+UserInputService.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then holdingAim = true end
+end)
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then holdingAim = false end
+end)
+RunService.RenderStepped:Connect(function()
+    local center = Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)
+    hardFovCircle.Position = center
+    softFovCircle.Position = center
+end)
+-- ──── Wall Check ───────────────────────────────────────────────────────────
+local function isTargetVisible(targetHead)
+    if not Character or not Character:FindFirstChild("Head") then return false end
+    local origin = Character.Head.Position
+    local direction = targetHead.Position - origin
+    local rayParams = RaycastParams.new()
+    rayParams.FilterDescendantsInstances = {Character}
+    rayParams.FilterType = Enum.RaycastFilterType.Exclude
+    rayParams.IgnoreWater = true
+    local result = workspace:Raycast(origin, direction.Unit * (direction.Magnitude + 3), rayParams)
+    return not result or result.Instance:IsDescendantOf(targetHead.Parent)
+end
+-- ──── GUI Helpers ─────────────────────────────────────────────────────────
+local function createToggle(yPos, text, callback, default)
+    local frame = Instance.new("Frame", Scrolling)
+    frame.Size = UDim2.new(1,0,0,36)
+    frame.Position = UDim2.new(0,0,0,yPos)
+    frame.BackgroundTransparency = 1
+   
+    local btn = Instance.new("TextButton", frame)
+    btn.Size = UDim2.new(0.999,0,1,0)
+    btn.BackgroundColor3 = Color3.fromRGB(38, 35, 55)
+    btn.Text = text
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 13
+    btn.AutoButtonColor = false
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,5)
+   
+    local stroke = Instance.new("UIStroke", btn)
+    stroke.Color = Color3.fromRGB(120, 100, 170)
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+   
+    local ind = Instance.new("Frame", frame)
+    ind.Size = UDim2.new(0,26,0,26)
+    ind.Position = UDim2.new(1,-34,0.5,-13)
+    ind.BackgroundColor3 = Color3.fromRGB(55, 50, 80)
+    Instance.new("UICorner", ind).CornerRadius = UDim.new(0,5)
+   
+    local indStroke = Instance.new("UIStroke", ind)
+    indStroke.Color = Color3.fromRGB(140, 120, 190)
+    indStroke.Thickness = 1
+    indStroke.Transparency = 0.4
+   
+    local state = default or false
+    ind.BackgroundColor3 = state and Color3.fromRGB(180,140,255) or Color3.fromRGB(55,50,80)
+   
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        ind.BackgroundColor3 = state and Color3.fromRGB(180,140,255) or Color3.fromRGB(55,50,80)
+        ClickSound:Play()
+        callback(state)
+    end)
+    return frame, 36
+end
+local function createSlider(yPos, name, min, max, def, callback)
+    local frame = Instance.new("Frame", Scrolling)
+    frame.Size = UDim2.new(1,0,0,52)
+    frame.Position = UDim2.new(0,0,0,yPos)
+    frame.BackgroundTransparency = 1
+   
+    local label = Instance.new("TextLabel", frame)
+    label.Size = UDim2.new(1,0,0,20)
+    label.BackgroundTransparency = 1
+    label.Text = name .. ": " .. def
+    label.TextColor3 = Color3.new(1,1,1)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 13
+    label.TextXAlignment = Enum.TextXAlignment.Left
+   
+    local bar = Instance.new("Frame", frame)
+    bar.Size = UDim2.new(1,-12,0,8)
+    bar.Position = UDim2.new(0,6,0,26)
+    bar.BackgroundColor3 = Color3.fromRGB(45,40,65)
+    Instance.new("UICorner", bar).CornerRadius = UDim.new(0,4)
+   
+    local fill = Instance.new("Frame", bar)
+    fill.Size = UDim2.new((def-min)/(max-min),0,1,0)
+    fill.BackgroundColor3 = Color3.fromRGB(160,130,220)
+    Instance.new("UICorner", fill).CornerRadius = UDim.new(0,4)
+   
+    local knob = Instance.new("Frame", bar)
+    knob.Size = UDim2.new(0,16,0,16)
+    knob.Position = UDim2.new((def-min)/(max-min),-8,0.5,-8)
+    knob.BackgroundColor3 = Color3.fromRGB(200,170,255)
+    Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
+   
+    local dragging = false
+    knob.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true end
+    end)
+    knob.InputEnded:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+    end)
+   
+    UserInputService.InputChanged:Connect(function(inp)
+        if not dragging or inp.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+        local rel = math.clamp((inp.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+        local val = math.floor(min + (max - min) * rel + 0.5)
+        fill.Size = UDim2.new(rel,0,1,0)
+        knob.Position = UDim2.new(rel,-8,0.5,-8)
+        label.Text = name .. ": " .. val
+        callback(val)
+    end)
+    return frame, 52
+end
+-- ──── ESP ──────────────────────────────────────────────────────────────────
+local ESP_COLOR = Color3.fromRGB(210, 150, 255) -- same for box & skeleton & tracers
+local function updateBoxESP()
+    for _, plr in Players:GetPlayers() do
+        if plr == Player then continue end
+        local data = espBoxes[plr] or {}
+        if not data.box then
+            data.box = Drawing.new("Square")
+            data.box.Thickness = 1.6
+            data.box.Color = ESP_COLOR
+            data.box.Transparency = 0.9
+            data.box.Filled = false
+           
+            data.bg = Drawing.new("Square")
+            data.bg.Thickness = 1
+            data.bg.Color = Color3.fromRGB(30,30,30)
+            data.bg.Transparency = 0.5
+            data.bg.Filled = true
+           
+            data.bar = Drawing.new("Square")
+            data.bar.Thickness = 1
+            data.bar.Transparency = 0.3
+            data.bar.Filled = true
+           
+            espBoxes[plr] = data
+        end
+       
+        if boxEspEnabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") then
+            local root = plr.Character.HumanoidRootPart
+            local head = plr.Character.Head
+            local hum = plr.Character:FindFirstChild("Humanoid")
+            local rootPos, onScr = camera:WorldToViewportPoint(root.Position)
+            if onScr then
+                local hPos = camera:WorldToViewportPoint(head.Position + Vector3.new(0,0.7,0))
+                local fPos = camera:WorldToViewportPoint(root.Position - Vector3.new(0,4,0))
+                local height = math.abs(hPos.Y - fPos.Y)
+                local width = height * 0.52
+               
+                data.box.Size = Vector2.new(width, height)
+                data.box.Position = Vector2.new(rootPos.X - width/2, rootPos.Y - height/2)
+                data.box.Visible = true
+               
+                if hum then
+                    local pct = math.clamp(hum.Health / hum.MaxHealth, 0, 1)
+                    data.bg.Size = Vector2.new(width, 5)
+                    data.bg.Position = Vector2.new(rootPos.X - width/2, rootPos.Y + height/2 + 3)
+                    data.bg.Visible = true
+                    data.bar.Size = Vector2.new(width * pct, 5)
+                    data.bar.Position = data.bg.Position
+                    data.bar.Color = Color3.fromHSV(pct * 0.33, 0.9, 0.9)
+                    data.bar.Visible = true
+                end
+            else
+                data.box.Visible = false
+                data.bg.Visible = false
+                data.bar.Visible = false
+            end
+        else
+            data.box.Visible = false
+            data.bg.Visible = false
+            data.bar.Visible = false
+        end
+    end
+end
+local skeletonParts = {
+    {"Head","UpperTorso"}, {"UpperTorso","LowerTorso"},
+    {"UpperTorso","LeftUpperArm"}, {"LeftUpperArm","LeftLowerArm"}, {"LeftLowerArm","LeftHand"},
+    {"UpperTorso","RightUpperArm"}, {"RightUpperArm","RightLowerArm"}, {"RightLowerArm","RightHand"},
+    {"LowerTorso","LeftUpperLeg"}, {"LeftUpperLeg","LeftLowerLeg"}, {"LeftLowerLeg","LeftFoot"},
+    {"LowerTorso","RightUpperLeg"}, {"RightUpperLeg","RightLowerLeg"}, {"RightLowerLeg","RightFoot"}
+}
+local function updateSkeleton()
+    for _, plr in Players:GetPlayers() do
+        if plr == Player then continue end
+        local entry = skeletons[plr] or {lines = {}}
+        if #entry.lines == 0 then
+            for _ in skeletonParts do
+                local main = Drawing.new("Line")
+                main.Color = ESP_COLOR -- same color as box
+                main.Thickness = 2.2
+                main.Transparency = 0.75
+                main.Visible = false
+               
+                local glow = Drawing.new("Line")
+                glow.Color = Color3.fromRGB(180, 120, 255) -- slight glow variant
+                glow.Thickness = 4.5
+                glow.Transparency = 0.92
+                glow.Visible = false
+               
+                table.insert(entry.lines, {main = main, glow = glow})
+            end
+            skeletons[plr] = entry
+        end
+       
+        if not skeletonEspEnabled or not plr.Character or not plr.Character:FindFirstChild("Head") then
+            for _, pair in entry.lines do
+                pair.main.Visible = false
+                pair.glow.Visible = false
+            end
+            continue
+        end
+       
+        local head = plr.Character.Head
+        local visible = isTargetVisible(head)
+        local anyOnScreen = false
+       
+        for i, pair in ipairs(skeletonParts) do
+            local partA = plr.Character:FindFirstChild(pair[1])
+            local partB = plr.Character:FindFirstChild(pair[2])
+            if not partA or not partB then
+                entry.lines[i].main.Visible = false
+                entry.lines[i].glow.Visible = false
+                continue
+            end
+           
+            local posA, onScreenA = camera:WorldToViewportPoint(partA.Position)
+            local posB, onScreenB = camera:WorldToViewportPoint(partB.Position)
+           
+            if onScreenA and onScreenB then
+                local vecA = Vector2.new(posA.X, posA.Y)
+                local vecB = Vector2.new(posB.X, posB.Y)
+               
+                entry.lines[i].glow.From = vecA
+                entry.lines[i].glow.To = vecB
+                entry.lines[i].glow.Visible = true
+               
+                entry.lines[i].main.From = vecA
+                entry.lines[i].main.To = vecB
+                entry.lines[i].main.Visible = true
+                entry.lines[i].main.Transparency = 0.75 -- Fixed: no dim through walls
+               
+                anyOnScreen = true
+            else
+                entry.lines[i].main.Visible = false
+                entry.lines[i].glow.Visible = false
+            end
+        end
+       
+        if not anyOnScreen then
+            for _, pair in entry.lines do
+                pair.main.Visible = false
+                pair.glow.Visible = false
+            end
+        end
+    end
+end
+local function updateTracers()
+    for _, plr in Players:GetPlayers() do
+        if plr == Player then continue end
+        local data = tracers[plr] or {}
+        if not data.line then
+            data.line = Drawing.new("Line")
+            data.line.Color = ESP_COLOR
+            data.line.Thickness = 1.5
+            data.line.Transparency = 0.8
+            data.line.Visible = false
+            tracers[plr] = data
+        end
+       
+        if tracersEnabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local root = plr.Character.HumanoidRootPart
+            local rootPos, onScr = camera:WorldToViewportPoint(root.Position)
+            if onScr then
+                local from = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y) -- bottom center
+                local to = Vector2.new(rootPos.X, rootPos.Y)
+                data.line.From = from
+                data.line.To = to
+                data.line.Visible = true
+            else
+                data.line.Visible = false
+            end
+        else
+            data.line.Visible = false
+        end
+    end
+end
+-- ──── Fly & NoClip ─────────────────────────────────────────────────────────
+local function toggleFly(on)
+    flyEnabled = on
+    if not Character or not Character:FindFirstChild("HumanoidRootPart") then return end
+    local root = Character.HumanoidRootPart
+    if on then
+        flyBV = Instance.new("BodyVelocity", root)
+        flyBV.MaxForce = Vector3.new(1e9,1e9,1e9)
+        flyBV.Velocity = Vector3.zero
+        flyConn = RunService.RenderStepped:Connect(function()
+            local dir = Vector3.zero
+            local cf = camera.CFrame
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir += cf.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir -= cf.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir -= cf.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir += cf.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir += Vector3.yAxis end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then dir -= Vector3.yAxis end
+            flyBV.Velocity = dir.Unit * flySpeed * (UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) and 2.5 or 1)
+        end)
+    else
+        if flyConn then flyConn:Disconnect() flyConn = nil end
+        if flyBV then flyBV:Destroy() flyBV = nil end
+    end
+end
+local function toggleNoClip(on)
+    noClipEnabled = on
+    if noclipConn then noclipConn:Disconnect() noclipConn = nil end
+    if on then
+        noclipConn = RunService.Stepped:Connect(function()
+            if Character then
+                for _, p in Character:GetDescendants() do
+                    if p:IsA("BasePart") then p.CanCollide = false end
+                end
+            end
+        end)
+    end
+end
+-- ──── Spin Bot ─────────────────────────────────────────────────────────────
+local function toggleSpinbot(on)
+    spinbotEnabled = on
+    if not Character or not Character:FindFirstChild("HumanoidRootPart") then return end
+    local root = Character.HumanoidRootPart
+    if on then
+        bodyGyro = Instance.new("BodyGyro")
+        bodyGyro.Parent = root
+        bodyGyro.MaxTorque = Vector3.new(0, math.huge, 0)
+        bodyGyro.P = 10000
+        bodyGyro.D = 0
+        bodyGyro.CFrame = root.CFrame
+        spinConn = RunService.RenderStepped:Connect(function()
+            bodyGyro.CFrame = bodyGyro.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0) -- Use variable speed
+        end)
+    else
+        if spinConn then spinConn:Disconnect() spinConn = nil end
+        if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
+    end
+end
+-- ──── Bunny Hop ────────────────────────────────────────────────────────────
+local function toggleBunnyHop(on)
+    bunnyHopEnabled = on
+    if bunnyConn then bunnyConn:Disconnect() bunnyConn = nil end
+    if on then
+        bunnyConn = RunService.RenderStepped:Connect(function()
+            if Humanoid and Humanoid:GetState() == Enum.HumanoidStateType.Freefall then return end
+            if Humanoid and UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
+    end
+end
+-- ──── Shaders Toggle ───────────────────────────────────────────────────────
+local function toggleShaders(on)
+    shadersEnabled = on
+    bloomEffect.Enabled = on
+    colorCorrection.Enabled = on
+    sunRays.Enabled = on
+    blurEffect.Enabled = on
+end
+-- ──── Fog Toggle ───────────────────────────────────────────────────────────
+local function toggleFog(on)
+    fogEnabled = on
+    if on then
+        Lighting.FogStart = 0
+        Lighting.FogEnd = 300
+        Lighting.FogColor = Color3.fromRGB(128, 0, 128)
+        if atm then
+            atm.Density = 0.5
+            atm.Color = Color3.fromRGB(128, 0, 128)
+            atm.Decay = Color3.fromRGB(75, 0, 75)
+            atm.Glare = 0
+            atm.Haze = 2
+        end
+    else
+        Lighting.FogStart = 0
+        Lighting.FogEnd = 100000
+        if atm then
+            atm.Density = 0
+        end
+    end
+end
+-- ──── 3rd Person Toggle ────────────────────────────────────────────────────
+local yaw = 0
+local pitch = 0
+local function toggleThirdPerson(on)
+    thirdPersonEnabled = on
+    if on then
+        camera.CameraType = Enum.CameraType.Scriptable
+        yaw = 0
+        pitch = 0
+        local lastMousePos = UserInputService:GetMouseLocation()
+        inputConn = UserInputService.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                local delta = input.Position - lastMousePos
+                yaw = yaw - delta.X * 0.002
+                pitch = pitch - delta.Y * 0.002
+                pitch = math.clamp(pitch, -math.pi/2 + 0.1, math.pi/2 - 0.1)
+                lastMousePos = input.Position
+            end
+        end)
+        thirdPersonConn = RunService.RenderStepped:Connect(function()
+            if Character and Character:FindFirstChild("HumanoidRootPart") then
+                local root = Character.HumanoidRootPart
+                local camCF = CFrame.new(root.Position) * CFrame.Angles(0, yaw, 0) * CFrame.Angles(pitch, 0, 0)
+                local camPos = camCF.Position - camCF.LookVector * 8 + camCF.UpVector * 1
+                camera.CFrame = CFrame.lookAt(camPos, root.Position)
+            end
+        end)
+    else
+        if inputConn then inputConn:Disconnect() inputConn = nil end
+        if thirdPersonConn then thirdPersonConn:Disconnect() thirdPersonConn = nil end
+        camera.CameraType = Enum.CameraType.Custom
+    end
+end
+-- ──── Aimbot ───────────────────────────────────────────────────────────────
+local aimConn
+local function toggleAimbotSystem(on)
+    aimbotEnabled = on
+    hardFovCircle.Visible = on and not softAimbotEnabled
+    softFovCircle.Visible = on and softAimbotEnabled
+    if aimConn then aimConn:Disconnect() aimConn = nil end
+    if on then
+        aimConn = RunService.RenderStepped:Connect(function()
+            if not holdingAim then return end
+            local mousePos = UserInputService:GetMouseLocation()
+            local closestHard, distHard = nil, hardAimFov + 1
+            local closestSoft, distSoft = nil, softAimFov + 1
+            local hardHead, softHead = nil, nil
+            for _, p in Players:GetPlayers() do
+                if p == Player or not p.Character or not p.Character:FindFirstChild("Head") then continue end
+                local head = p.Character.Head
+                local screen, onScr = camera:WorldToViewportPoint(head.Position)
+                if onScr and isTargetVisible(head) then
+                    local dist = (Vector2.new(screen.X, screen.Y) - mousePos).Magnitude
+                    if dist < distHard then
+                        distHard = dist
+                        closestHard = p
+                        hardHead = head
+                    end
+                    if dist < distSoft then
+                        distSoft = dist
+                        closestSoft = p
+                        softHead = head
+                    end
+                end
+            end
+            -- Hard aimbot (snap)
+            if closestHard and hardHead and aimbotEnabled and not softAimbotEnabled then
+                camera.CFrame = CFrame.lookAt(camera.CFrame.Position, hardHead.Position)
+            end
+            -- Soft aimbot (smooth)
+            if closestSoft and softHead and softAimbotEnabled then
+                local targetCF = CFrame.lookAt(camera.CFrame.Position, softHead.Position)
+                camera.CFrame = camera.CFrame:Lerp(targetCF, softSmoothing)
+            end
+            -- TriggerBot
+            if triggerbotEnabled then
+                local targetHead = softHead or hardHead
+                if targetHead then
+                    local center = Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)
+                    local aimPos = camera:WorldToViewportPoint(targetHead.Position)
+                    local dev = (Vector2.new(aimPos.X, aimPos.Y) - center).Magnitude
+                    if dev <= 18 then
+                        VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
+                        task.wait(0.006 + math.random(4,20)/1000)
+                        VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
+                    end
+                end
+            end
+        end)
+    end
+end
+-- ──── Purple Glow ──────────────────────────────────────────────────────────
+local function updateGlow(enabled)
+    for _, hl in pairs(highlights) do
+        hl.Enabled = enabled
+    end
+end
+local function addGlow(plr)
+    plr.CharacterAdded:Connect(function(char)
+        local hl = Instance.new("Highlight")
+        hl.Parent = char
+        hl.Name = "PurpleGlow"
+        hl.FillColor = Color3.fromRGB(128, 0, 128) -- Purple fill
+        hl.OutlineColor = Color3.fromRGB(255, 0, 255) -- Magenta outline
+        hl.FillTransparency = 0.7
+        hl.OutlineTransparency = 0
+        hl.Enabled = glowEnabled
+        highlights[plr] = hl
+    end)
+    if plr.Character then
+        local char = plr.Character
+        local hl = Instance.new("Highlight")
+        hl.Parent = char
+        hl.Name = "PurpleGlow"
+        hl.FillColor = Color3.fromRGB(128, 0, 128)
+        hl.OutlineColor = Color3.fromRGB(255, 0, 255)
+        hl.FillTransparency = 0.7
+        hl.OutlineTransparency = 0
+        hl.Enabled = glowEnabled
+        highlights[plr] = hl
+    end
+end
+for _, plr in Players:GetPlayers() do
+    addGlow(plr)
+end
+Players.PlayerAdded:Connect(addGlow)
+-- ──── Purple Sky & Fog on load ─────────────────────────────────────────────
+Lighting.FogStart = 0
+Lighting.FogEnd = 300
+Lighting.FogColor = Color3.fromRGB(128, 0, 128)
+local atm = Instance.new("Atmosphere")
+atm.Parent = Lighting
+Lighting.Ambient = Color3.fromRGB(128, 0, 128)
+Lighting.OutdoorAmbient = Color3.fromRGB(75, 0, 75)
+Lighting.ColorShift_Bottom = Color3.fromRGB(100, 0, 100)
+Lighting.ColorShift_Top = Color3.fromRGB(150, 0, 150)
+toggleFog(true) -- Initial on
+-- ──── Minimize ─────────────────────────────────────────────────────────────
+MinimizeBtn.MouseButton1Click:Connect(function()
+    ClickSound:Play()
+    isMinimized = not isMinimized
+    EspFrame.Size = isMinimized and UDim2.new(0,216,0,34) or UDim2.new(0,216,0,450)
+    Scrolling.Visible = not isMinimized
+    MinimizeBtn.Text = isMinimized and "+" or "_"
+end)
+-- ──── UI Elements ──────────────────────────────────────────────────────────
+local y = 12
+createToggle(y, "Box ESP", function(v)
+    boxEspEnabled = v
+    if v then
+        RunService:BindToRenderStep("BoxESP", 200, updateBoxESP)
+    else
+        RunService:UnbindFromRenderStep("BoxESP")
+        for _,d in espBoxes do
+            d.box.Visible = false
+            d.bg.Visible = false
+            d.bar.Visible = false
+        end
+    end
+end)
+y += 44
+createToggle(y, "Skeleton ESP", function(v)
+    skeletonEspEnabled = v
+    if v then
+        RunService:BindToRenderStep("SkeletonESP", 201, updateSkeleton)
+    else
+        RunService:UnbindFromRenderStep("SkeletonESP")
+        for _,e in skeletons do
+            for _, pair in e.lines do
+                pair.main.Visible = false
+                pair.glow.Visible = false
+            end
+        end
+    end
+end)
+y += 44
+createToggle(y, "Tracers", function(v)
+    tracersEnabled = v
+    if v then
+        RunService:BindToRenderStep("Tracers", 202, updateTracers)
+    else
+        RunService:UnbindFromRenderStep("Tracers")
+        for _, d in tracers do
+            d.line.Visible = false
+        end
+    end
+end)
+y += 44
+createToggle(y, "Aimbot (Hold RMB)", function(v)
+    toggleAimbotSystem(v)
+end)
+y += 44
+createToggle(y, "Soft Aimbot Mode", function(v)
+    softAimbotEnabled = v
+    hardFovCircle.Visible = aimbotEnabled and not v
+    softFovCircle.Visible = aimbotEnabled and v
+end)
+y += 44
+createToggle(y, "TriggerBot", function(v)
+    triggerbotEnabled = v
+end)
+y += 44
+createToggle(y, "Fly", function(v)
+    toggleFly(v)
+end)
+y += 44
+createToggle(y, "NoClip", function(v)
+    toggleNoClip(v)
+end)
+y += 44
+createToggle(y, "Spin Bot", function(v)
+    toggleSpinbot(v)
+end)
+y += 44
+createToggle(y, "Bunny Hop", function(v)
+    toggleBunnyHop(v)
+end)
+y += 44
+createToggle(y, "Purple Glow", function(v)
+    glowEnabled = v
+    updateGlow(v)
+end, true) -- Default on
+y += 44
+createToggle(y, "Shaders", function(v)
+    toggleShaders(v)
+end)
+y += 44
+createToggle(y, "Purple Fog", function(v)
+    toggleFog(v)
+end, true) -- Default on
+y += 44
+createToggle(y, "3rd Person", function(v)
+    toggleThirdPerson(v)
+end)
+y += 44
+createSlider(y, "Fly Speed", 30, 220, flySpeed, function(v)
+    flySpeed = v
+end)
+y += 60
+createSlider(y, "Spin Speed", 5, 50, spinSpeed, function(v)
+    spinSpeed = v
+end)
+y += 60
+createSlider(y, "Hard Aim FOV", 60, 400, hardAimFov, function(v)
+    hardAimFov = v
+    hardFovCircle.Radius = v
+end)
+y += 60
+createSlider(y, "Soft Aim FOV", 100, 500, softAimFov, function(v)
+    softAimFov = v
+    softFovCircle.Radius = v
+end)
+y += 60
+createSlider(y, "Soft Smoothing", 3, 30, math.floor(softSmoothing * 100), function(v)
+    softSmoothing = v / 100
+end)
+y += 60
+Scrolling.CanvasSize = UDim2.new(0,0,0,y + 40)
+-- ──── Cleanup ──────────────────────────────────────────────────────────────
+Players.PlayerRemoving:Connect(function(plr)
+    if espBoxes[plr] then
+        espBoxes[plr].box:Remove()
+        espBoxes[plr].bg:Remove()
+        espBoxes[plr].bar:Remove()
+        espBoxes[plr] = nil
+    end
+    if skeletons[plr] then
+        for _, pair in skeletons[plr].lines do
+            pair.main:Remove()
+            pair.glow:Remove()
+        end
+        skeletons[plr] = nil
+    end
+    if tracers[plr] then
+        tracers[plr].line:Remove()
+        tracers[plr] = nil
+    end
+    if highlights[plr] then
+        highlights[plr]:Destroy()
+        highlights[plr] = nil
+    end
+end)
+print("pandas Cheats loaded | fixes applied: sound ID changed to 6655851046, added checks for atm in toggleFog | spinbot using BodyGyro | 3rd person with mouse control to avoid spin issues | removed DepthOfField from shaders to reduce blurriness | Enhanced shaders, added bunny hop, added spin bot slider")
