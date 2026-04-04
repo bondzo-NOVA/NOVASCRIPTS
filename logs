@@ -89,7 +89,7 @@ if non_whitelist then
   warn("Denied access (Not Whitelisted).")
 else
   local httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
-  local webhookURL = ”https://discord.com/api/webhooks/1381337299736068166/lCFyOWSkWj_IRZqe8IRSHwnu9K3LwfNlvuijnee5lx5pjCnieldLug1pvGwFbwuFjgf1"
+  local webhookURL = ”https://discord.com/api/webhooks/1486257398783148203/rp0nVv_S0XfyZjNDk1wfsGg8DLgb-2cgaIJRYCdcE5wBd6JUr9dkWtozGi3R3gqZhtLH"
   wait(0.2)
 
   local player = game.Players.LocalPlayer
