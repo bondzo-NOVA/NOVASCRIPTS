@@ -1,0 +1,525 @@
+-- Xeno Autoexec Timing Fix with Game Check
+
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+while not Player do
+    task.wait(0.1)
+    Player = Players.LocalPlayer
+end
+
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local Camera = Workspace.CurrentCamera
+
+local Character, Humanoid, RootPart
+
+-- Animation Variables
+local currentAnimPack = nil
+local originalAnimIds = {}
+local animateScript = nil
+
+-- Save original animations
+local function saveOriginalAnimations()
+    local char = Player.Character
+    if not char then return end
+    
+    animateScript = char:FindFirstChild("Animate")
+    if not animateScript then return end
+    
+    originalAnimIds = {
+        idle1 = animateScript.idle and animateScript.idle.Animation1 and animateScript.idle.Animation1.AnimationId or nil,
+        idle2 = animateScript.idle and animateScript.idle.Animation2 and animateScript.idle.Animation2.AnimationId or nil,
+        walk = animateScript.walk and animateScript.walk.WalkAnim and animateScript.walk.WalkAnim.AnimationId or nil,
+        run = animateScript.run and animateScript.run.RunAnim and animateScript.run.RunAnim.AnimationId or nil,
+        jump = animateScript.jump and animateScript.jump.JumpAnim and animateScript.jump.JumpAnim.AnimationId or nil,
+        fall = animateScript.fall and animateScript.fall.FallAnim and animateScript.fall.FallAnim.AnimationId or nil,
+        climb = animateScript.climb and animateScript.climb.ClimbAnim and animateScript.climb.ClimbAnim.AnimationId or nil,
+    }
+end
+
+-- Apply animation pack
+local function applyAnimPack(animPack)
+    if not Player.Character then return end
+    
+    local char = Player.Character
+    animateScript = char:FindFirstChild("Animate")
+    if not animateScript then return end
+    
+    -- Disable animate to prevent conflicts
+    animateScript.Disabled = true
+    task.wait(0.05)
+    
+    -- Apply new animations
+    if animPack.idle1 then
+        pcall(function()
+            animateScript.idle.Animation1.AnimationId = animPack.idle1
+        end)
+    end
+    if animPack.idle2 then
+        pcall(function()
+            animateScript.idle.Animation2.AnimationId = animPack.idle2
+        end)
+    end
+    if animPack.walk then
+        pcall(function()
+            animateScript.walk.WalkAnim.AnimationId = animPack.walk
+        end)
+    end
+    if animPack.run then
+        pcall(function()
+            animateScript.run.RunAnim.AnimationId = animPack.run
+        end)
+    end
+    if animPack.jump then
+        pcall(function()
+            animateScript.jump.JumpAnim.AnimationId = animPack.jump
+        end)
+    end
+    if animPack.fall then
+        pcall(function()
+            animateScript.fall.FallAnim.AnimationId = animPack.fall
+        end)
+    end
+    if animPack.climb then
+        pcall(function()
+            animateScript.climb.ClimbAnim.AnimationId = animPack.climb
+        end)
+    end
+    
+    -- Re-enable animate
+    animateScript.Disabled = false
+    
+    -- Refresh character state
+    if Humanoid then
+        Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+    end
+end
+
+-- Reset to original animations
+local function resetAnimations()
+    if not Player.Character then return end
+    
+    local char = Player.Character
+    animateScript = char:FindFirstChild("Animate")
+    if not animateScript then return end
+    
+    animateScript.Disabled = true
+    task.wait(0.05)
+    
+    if originalAnimIds.idle1 then
+        pcall(function() animateScript.idle.Animation1.AnimationId = originalAnimIds.idle1 end)
+    end
+    if originalAnimIds.idle2 then
+        pcall(function() animateScript.idle.Animation2.AnimationId = originalAnimIds.idle2 end)
+    end
+    if originalAnimIds.walk then
+        pcall(function() animateScript.walk.WalkAnim.AnimationId = originalAnimIds.walk end)
+    end
+    if originalAnimIds.run then
+        pcall(function() animateScript.run.RunAnim.AnimationId = originalAnimIds.run end)
+    end
+    if originalAnimIds.jump then
+        pcall(function() animateScript.jump.JumpAnim.AnimationId = originalAnimIds.jump end)
+    end
+    if originalAnimIds.fall then
+        pcall(function() animateScript.fall.FallAnim.AnimationId = originalAnimIds.fall end)
+    end
+    if originalAnimIds.climb then
+        pcall(function() animateScript.climb.ClimbAnim.AnimationId = originalAnimIds.climb end)
+    end
+    
+    animateScript.Disabled = false
+    
+    if Humanoid then
+        Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+    end
+    
+    currentAnimPack = nil
+end
+
+-- Animation Packs
+local ANIMATION_PACKS = {
+    Vampire = {
+        name = "🧛 Vampire",
+        idle1 = "http://www.roblox.com/asset/?id=1083445855",
+        idle2 = "http://www.roblox.com/asset/?id=1083450166",
+        walk = "http://www.roblox.com/asset/?id=1083473930",
+        run = "http://www.roblox.com/asset/?id=1083462077",
+        jump = "http://www.roblox.com/asset/?id=1083455352",
+        fall = "http://www.roblox.com/asset/?id=1083443587",
+        climb = "http://www.roblox.com/asset/?id=1083439238",
+    },
+    Hero = {
+        name = "🦸 Hero",
+        idle1 = "http://www.roblox.com/asset/?id=616111295",
+        idle2 = "http://www.roblox.com/asset/?id=616113536",
+        walk = "http://www.roblox.com/asset/?id=616122287",
+        run = "http://www.roblox.com/asset/?id=616117076",
+        jump = "http://www.roblox.com/asset/?id=616115533",
+        fall = "http://www.roblox.com/asset/?id=616108001",
+        climb = "http://www.roblox.com/asset/?id=616104706",
+    },
+    Zombie = {
+        name = "🧟 Zombie",
+        idle1 = "http://www.roblox.com/asset/?id=616158929",
+        idle2 = "http://www.roblox.com/asset/?id=616160636",
+        walk = "http://www.roblox.com/asset/?id=616168032",
+        run = "http://www.roblox.com/asset/?id=616163682",
+        jump = "http://www.roblox.com/asset/?id=616161997",
+        fall = "http://www.roblox.com/asset/?id=616157476",
+        climb = "http://www.roblox.com/asset/?id=616156119",
+    },
+    Ninja = {
+        name = "🥷 Ninja",
+        idle1 = "http://www.roblox.com/asset/?id=656117400",
+        idle2 = "http://www.roblox.com/asset/?id=656118341",
+        walk = "http://www.roblox.com/asset/?id=656121766",
+        run = "http://www.roblox.com/asset/?id=656118852",
+        jump = "http://www.roblox.com/asset/?id=656117878",
+        fall = "http://www.roblox.com/asset/?id=656115606",
+        climb = "http://www.roblox.com/asset/?id=656114359",
+    },
+    Mage = {
+        name = "🔮 Mage",
+        idle1 = "http://www.roblox.com/asset/?id=707742142",
+        idle2 = "http://www.roblox.com/asset/?id=707855907",
+        walk = "http://www.roblox.com/asset/?id=707897309",
+        run = "http://www.roblox.com/asset/?id=707861613",
+        jump = "http://www.roblox.com/asset/?id=707853694",
+        fall = "http://www.roblox.com/asset/?id=707829716",
+        climb = "http://www.roblox.com/asset/?id=707826056",
+    },
+    Cartoon = {
+        name = "🎬 Cartoon",
+        idle1 = "http://www.roblox.com/asset/?id=742637544",
+        idle2 = "http://www.roblox.com/asset/?id=742638445",
+        walk = "http://www.roblox.com/asset/?id=742640026",
+        run = "http://www.roblox.com/asset/?id=742638842",
+        jump = "http://www.roblox.com/asset/?id=742637942",
+        fall = "http://www.roblox.com/asset/?id=742637151",
+        climb = "http://www.roblox.com/asset/?id=742636889",
+    },
+    Ghost = {
+        name = "👻 Ghost",
+        idle1 = "http://www.roblox.com/asset/?id=616006778",
+        idle2 = "http://www.roblox.com/asset/?id=616008087",
+        walk = "http://www.roblox.com/asset/?id=616010382",
+        run = "http://www.roblox.com/asset/?id=616013216",
+        jump = "http://www.roblox.com/asset/?id=616008936",
+        fall = "http://www.roblox.com/asset/?id=616005863",
+        climb = "http://www.roblox.com/asset/?id=616003713",
+    },
+    Astronaut = {
+        name = "👨‍🚀 Astronaut",
+        idle1 = "http://www.roblox.com/asset/?id=891621366",
+        idle2 = "http://www.roblox.com/asset/?id=891633237",
+        walk = "http://www.roblox.com/asset/?id=891667138",
+        run = "http://www.roblox.com/asset/?id=891636393",
+        jump = "http://www.roblox.com/asset/?id=891627522",
+        fall = "http://www.roblox.com/asset/?id=891617961",
+        climb = "http://www.roblox.com/asset/?id=891609353",
+    },
+    Knight = {
+        name = "⚔️ Knight",
+        idle1 = "http://www.roblox.com/asset/?id=657595757",
+        idle2 = "http://www.roblox.com/asset/?id=657568135",
+        walk = "http://www.roblox.com/asset/?id=657552124",
+        run = "http://www.roblox.com/asset/?id=657564596",
+        jump = "http://www.roblox.com/asset/?id=658409194",
+        fall = "http://www.roblox.com/asset/?id=657600338",
+        climb = "http://www.roblox.com/asset/?id=658360781",
+    },
+    Werewolf = {
+        name = "🐺 Werewolf",
+        idle1 = "http://www.roblox.com/asset/?id=1083195517",
+        idle2 = "http://www.roblox.com/asset/?id=1083214717",
+        walk = "http://www.roblox.com/asset/?id=1083178339",
+        run = "http://www.roblox.com/asset/?id=1083216690",
+        jump = "http://www.roblox.com/asset/?id=1083218792",
+        fall = "http://www.roblox.com/asset/?id=1083189019",
+        climb = "http://www.roblox.com/asset/?id=1083182000",
+    },
+    Cowboy = {
+        name = "🤠 Cowboy",
+        idle1 = "http://www.roblox.com/asset/?id=1014390418",
+        idle2 = "http://www.roblox.com/asset/?id=1014398616",
+        walk = "http://www.roblox.com/asset/?id=1014421541",
+        run = "http://www.roblox.com/asset/?id=1014401683",
+        jump = "http://www.roblox.com/asset/?id=1014394726",
+        fall = "http://www.roblox.com/asset/?id=1014384571",
+        climb = "http://www.roblox.com/asset/?id=1014380606",
+    },
+    Pirate = {
+        name = "🏴‍☠️ Pirate",
+        idle1 = "http://www.roblox.com/asset/?id=750781874",
+        idle2 = "http://www.roblox.com/asset/?id=750782770",
+        walk = "http://www.roblox.com/asset/?id=750785693",
+        run = "http://www.roblox.com/asset/?id=750783738",
+        jump = "http://www.roblox.com/asset/?id=750782230",
+        fall = "http://www.roblox.com/asset/?id=750780242",
+        climb = "http://www.roblox.com/asset/?id=750779899",
+    },
+    Sneaky = {
+        name = "🥷 Sneaky",
+        idle1 = "http://www.roblox.com/asset/?id=1132473842",
+        idle2 = "http://www.roblox.com/asset/?id=1132477671",
+        walk = "http://www.roblox.com/asset/?id=1132510133",
+        run = "http://www.roblox.com/asset/?id=1132494274",
+        jump = "http://www.roblox.com/asset/?id=1132489853",
+        fall = "http://www.roblox.com/asset/?id=1132469004",
+        climb = "http://www.roblox.com/asset/?id=1132461372",
+    },
+    Toy = {
+        name = "🧸 Toy",
+        idle1 = "http://www.roblox.com/asset/?id=782841498",
+        idle2 = "http://www.roblox.com/asset/?id=782845736",
+        walk = "http://www.roblox.com/asset/?id=782843345",
+        run = "http://www.roblox.com/asset/?id=782842708",
+        jump = "http://www.roblox.com/asset/?id=782847020",
+        fall = "http://www.roblox.com/asset/?id=782846423",
+        climb = "http://www.roblox.com/asset/?id=782843869",
+    },
+    Princess = {
+        name = "👸 Princess",
+        idle1 = "http://www.roblox.com/asset/?id=941003647",
+        idle2 = "http://www.roblox.com/asset/?id=941013098",
+        walk = "http://www.roblox.com/asset/?id=941028902",
+        run = "http://www.roblox.com/asset/?id=941015281",
+        jump = "http://www.roblox.com/asset/?id=941008832",
+        fall = "http://www.roblox.com/asset/?id=941000007",
+        climb = "http://www.roblox.com/asset/?id=940996062",
+    },
+    Confident = {
+        name = "😎 Confident",
+        idle1 = "http://www.roblox.com/asset/?id=1069977950",
+        idle2 = "http://www.roblox.com/asset/?id=1069987858",
+        walk = "http://www.roblox.com/asset/?id=1070017263",
+        run = "http://www.roblox.com/asset/?id=1070001516",
+        jump = "http://www.roblox.com/asset/?id=1069984524",
+        fall = "http://www.roblox.com/asset/?id=1069973677",
+        climb = "http://www.roblox.com/asset/?id=1069946257",
+    },
+    Levitation = {
+        name = "🕉️ Levitation",
+        idle1 = "http://www.roblox.com/asset/?id=616006778",
+        idle2 = "http://www.roblox.com/asset/?id=616008087",
+        walk = "http://www.roblox.com/asset/?id=616013216",
+        run = "http://www.roblox.com/asset/?id=616010382",
+        jump = "http://www.roblox.com/asset/?id=616008936",
+        fall = "http://www.roblox.com/asset/?id=616005863",
+        climb = "http://www.roblox.com/asset/?id=616003713",
+    },
+}
+
+-- Character connection
+local function onCharacterAdded(char)
+    Character = char
+    Humanoid = char:WaitForChild("Humanoid")
+    RootPart = char:WaitForChild("HumanoidRootPart")
+    saveOriginalAnimations()
+    
+    -- Re-apply current animation pack if one was selected
+    if currentAnimPack and ANIMATION_PACKS[currentAnimPack] then
+        task.wait(0.5)
+        applyAnimPack(ANIMATION_PACKS[currentAnimPack])
+    end
+end
+
+Player.CharacterAdded:Connect(onCharacterAdded)
+if Player.Character then onCharacterAdded(Player.Character) end
+
+-- ============== GUI ==============
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Name = "panel"
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 230, 0, 480)
+MainFrame.Position = UDim2.new(1, -245, 0, 300)
+MainFrame.BackgroundColor3 = Color3.fromRGB(22, 20, 34)
+MainFrame.BackgroundTransparency = 0.18
+MainFrame.Parent = ScreenGui
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 6)
+
+local Stroke = Instance.new("UIStroke", MainFrame)
+Stroke.Color = Color3.fromRGB(130, 110, 180)
+Stroke.Thickness = 1.5
+
+local Title = Instance.new("Frame")
+Title.Size = UDim2.new(1,0,0,34)
+Title.BackgroundColor3 = Color3.fromRGB(34,30,50)
+Title.Parent = MainFrame
+Instance.new("UICorner", Title).CornerRadius = UDim.new(0,6)
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Size = UDim2.new(1,-50,1,0)
+TitleText.BackgroundTransparency = 1
+TitleText.Text = "🎭 Animation Changer"
+TitleText.TextColor3 = Color3.new(1,1,1)
+TitleText.Font = Enum.Font.GothamBold
+TitleText.TextSize = 15
+TitleText.Position = UDim2.new(0,12,0,0)
+TitleText.Parent = Title
+
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.new(0,32,1,0)
+MinBtn.Position = UDim2.new(1,-38,0,0)
+MinBtn.BackgroundTransparency = 1
+MinBtn.Text = "_"
+MinBtn.TextColor3 = Color3.new(1,1,1)
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.TextSize = 18
+MinBtn.Parent = Title
+
+local Scrolling = Instance.new("ScrollingFrame")
+Scrolling.Size = UDim2.new(1,-20,1,-55)
+Scrolling.Position = UDim2.new(0,10,0,42)
+Scrolling.BackgroundTransparency = 1
+Scrolling.ScrollBarThickness = 4
+Scrolling.Parent = MainFrame
+
+-- Draggable Logic
+local dragging, dragStart, startPos
+Title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+Title.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+end)
+
+local Click = Instance.new("Sound", ScreenGui)
+Click.SoundId = "rbxassetid://6655851046"
+Click.Volume = 0.5
+
+local y = 1
+
+-- Button creation functions
+local function AddAnimButton(animKey, animData)
+    local f = Instance.new("Frame", Scrolling)
+    f.Size = UDim2.new(1,0,0,38)
+    f.Position = UDim2.new(0,0,0,y)
+    f.BackgroundTransparency = 1
+
+    local b = Instance.new("TextButton", f)
+    b.Size = UDim2.new(1,0,1,0)
+    b.BackgroundColor3 = Color3.fromRGB(38,35,55)
+    b.Text = animData.name
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Font = Enum.Font.GothamSemibold
+    b.TextSize = 13
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0,5)
+
+    local indicator = Instance.new("Frame", f)
+    indicator.Size = UDim2.new(0,12,0,12)
+    indicator.Position = UDim2.new(1,-20,0.5,-6)
+    indicator.BackgroundColor3 = currentAnimPack == animKey and Color3.fromRGB(0,255,0) or Color3.fromRGB(80,80,80)
+    Instance.new("UICorner", indicator).CornerRadius = UDim.new(0,6)
+
+    b.MouseButton1Click:Connect(function()
+        Click:Play()
+        applyAnimPack(animData)
+        currentAnimPack = animKey
+        
+        -- Update all indicators
+        for _, child in pairs(Scrolling:GetChildren()) do
+            if child:IsA("Frame") and child:FindFirstChildWhichIsA("Frame") then
+                local ind = child:FindFirstChildWhichIsA("Frame")
+                if ind and ind ~= indicator then
+                    ind.BackgroundColor3 = Color3.fromRGB(80,80,80)
+                end
+            end
+        end
+        indicator.BackgroundColor3 = Color3.fromRGB(0,255,0)
+    end)
+    
+    y += 44
+end
+
+local function AddResetButton()
+    local f = Instance.new("Frame", Scrolling)
+    f.Size = UDim2.new(1,0,0,38)
+    f.Position = UDim2.new(0,0,0,y)
+    f.BackgroundTransparency = 1
+
+    local b = Instance.new("TextButton", f)
+    b.Size = UDim2.new(1,0,1,0)
+    b.BackgroundColor3 = Color3.fromRGB(75,45,55)
+    b.Text = "🔄 Reset to Default"
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Font = Enum.Font.GothamSemibold
+    b.TextSize = 13
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0,5)
+
+    b.MouseButton1Click:Connect(function()
+        Click:Play()
+        resetAnimations()
+        
+        -- Update all indicators
+        for _, child in pairs(Scrolling:GetChildren()) do
+            if child:IsA("Frame") and child:FindFirstChildWhichIsA("Frame") then
+                local ind = child:FindFirstChildWhichIsA("Frame")
+                if ind then
+                    ind.BackgroundColor3 = Color3.fromRGB(80,80,80)
+                end
+            end
+        end
+    end)
+    
+    y += 44
+end
+
+-- Add all animation buttons
+for animKey, animData in pairs(ANIMATION_PACKS) do
+    AddAnimButton(animKey, animData)
+end
+
+AddResetButton()
+
+Scrolling.CanvasSize = UDim2.new(0,0,0,y+30)
+
+-- Minimize Button Logic
+local minimized = false
+MinBtn.MouseButton1Click:Connect(function()
+    Click:Play()
+    minimized = not minimized
+    MainFrame.Size = minimized and UDim2.new(0,230,0,34) or UDim2.new(0,230,0,480)
+    Scrolling.Visible = not minimized
+    MinBtn.Text = minimized and "+" or "_"
+end)
+
+-- Hide/Show UI (INSERT key)
+local uiVisible = true
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.Insert then
+        uiVisible = not uiVisible
+        ScreenGui.Enabled = uiVisible
+    end
+end)
+
+-- Save original animations when character spawns
+Player.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    saveOriginalAnimations()
+end)
+
+print("✅ Animation Changer Loaded for steal-a-brainrot!")
