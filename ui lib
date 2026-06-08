@@ -1,8 +1,4 @@
---[[ 
-	CatHub UI Library
-	Author: LUA Programming GOD
-	Version: 1.0
---]]
+
 
 local CatHubLib = {}
 CatHubLib.__index = CatHubLib
